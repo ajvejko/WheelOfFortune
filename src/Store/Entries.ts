@@ -1,7 +1,4 @@
-import { ref } from "vue";
-
-let numEntry = ref(0); //Amount of entries
-let entryNames: string[] = [
+export let entryNames: string[] = [
   //List of entries
   "Entry1",
   "Entry2",
@@ -10,7 +7,7 @@ let entryNames: string[] = [
   "Entry5",
   "Entry6",
 ];
-const entryColors: string[] = [
+export const entryColors: string[] = [
   // List of colors that are used to generate the wheel
   "#16A34A", //Green
   "#2563EB", //Blue
