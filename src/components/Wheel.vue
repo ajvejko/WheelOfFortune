@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from "vue";
+import { onMounted, onUnmounted, ref } from "vue";
 import { entryNames, entryColors } from "../Store/Entries";
 
 const canvas = ref<HTMLCanvasElement | null>(null);
@@ -16,11 +16,11 @@ onMounted(() => {
   ctx.value = canvas.value.getContext("2d");
 
   // Set the canvas size
-  canvas.value.width = 400 * dpr;
-  canvas.value.height = 400 * dpr;
+  canvas.value.width = window.innerWidth * dpr;
+  canvas.value.height = window.innerWidth * dpr;
   // Set the actual canvas size
-  canvas.value.style.width = "400px";
-  canvas.value.style.height = "400px";
+  canvas.value.style.width = window.innerWidth / dpr + "px";
+  canvas.value.style.height = window.innerWidth / dpr + "px";
   // Type narrowing
   if (!ctx.value) {
     return;
@@ -28,7 +28,30 @@ onMounted(() => {
   // Scale based on the devicePixelRatio
   ctx.value.scale(dpr, dpr);
   render();
+
+  // Listen for window resize event
+  window.addEventListener("resize", resizeCanvas);
 });
+
+onUnmounted(() => {
+  window.removeEventListener("resize", resizeCanvas);
+});
+
+const resizeCanvas = (): void => {
+  // Type narrowing
+  if (!ctx.value || !canvas.value) {
+    return;
+  }
+  ctx.value.clearRect(0, 0, canvas.value.width, canvas.value.height);
+  // Set the canvas size
+  canvas.value.width = window.innerWidth * dpr;
+  canvas.value.height = window.innerWidth * dpr;
+  // Set the actual canvas size
+  canvas.value.style.width = window.innerWidth / dpr + "px";
+  canvas.value.style.height = window.innerWidth / dpr + "px";
+  ctx.value.scale(dpr, dpr);
+  render();
+};
 
 const render = (): void => {
   // Type narrowing
@@ -37,13 +60,17 @@ const render = (): void => {
   }
   // Set the wheel parameters
   const lineWidth = 5;
-  const realCanvasWidth = 400;
-  const radius = realCanvasWidth / 2 - lineWidth;
+  const realCanvasWidth = canvas.value.width / dpr;
+  const radius = realCanvasWidth / 2.1;
   const centerX = realCanvasWidth / 2;
   const centerY = realCanvasWidth / 2;
   const numEntries = entryNames.length;
   const angle = (2 * Math.PI) / numEntries;
-  const fontSize = realCanvasWidth / 15;
+  //Calculate the font size
+  const fontSize = Math.min(
+    realCanvasWidth / (numEntries + 3),
+    realCanvasWidth / 15
+  );
 
   // Draw the wheel
   for (let i = 0; i < numEntries; i++) {
@@ -94,11 +121,26 @@ const render = (): void => {
   ctx.value.lineWidth = lineWidth;
   ctx.value.strokeStyle = "#FFFFFF";
   ctx.value.stroke();
+
+  // Draw the pointer
+  ctx.value.translate(radius * 1.15, centerY);
+  ctx.value.rotate(Math.PI * 2);
+  ctx.value.beginPath();
+  ctx.value.moveTo(radius * 0.8, 0);
+  ctx.value.lineTo(radius * 0.95, -10);
+  ctx.value.lineTo(radius * 0.95, 10);
+  ctx.value.fillStyle = "#FFFFFF";
+  ctx.value.fill();
 };
 </script>
 
 <template>
-  <div class="flex h-screen w-screen items-center justify-center">
-    <canvas width="500" height="500" ref="canvas"></canvas>
+  <div class="flex items-center justify-center">
+    <canvas
+      class="border-2 border-red-500"
+      width="500"
+      height="500"
+      ref="canvas"
+    ></canvas>
   </div>
 </template>
