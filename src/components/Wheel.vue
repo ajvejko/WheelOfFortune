@@ -10,12 +10,15 @@ const dpr = window.devicePixelRatio || 1;
 onMounted(() => {
   // Get the canvas context
   ctx.value = canvas.value?.getContext("2d") || null;
+
   // Type narrowing
   if (!ctx.value || !canvas.value) {
     return;
   }
+
   // Automatically sets the size of canvas and calls drawWheel()
   resizeCanvas();
+
   // Listen for window resize event
   window.addEventListener("resize", resizeCanvas);
 });
@@ -29,13 +32,21 @@ const resizeCanvas = (): void => {
   if (!ctx.value || !canvas.value) {
     return;
   }
+  //Check to size down the wheel when on bigger screens
+  let modifier = 2;
+  if (window.innerWidth > 1024) {
+    modifier = 3;
+  }
+
   // Set the canvas size
   canvas.value.width = window.innerWidth * dpr;
   canvas.value.height = window.innerWidth * dpr;
+
   // Set the actual canvas size
-  canvas.value.style.width = window.innerWidth / dpr + "px";
-  canvas.value.style.height = window.innerWidth / dpr + "px";
+  canvas.value.style.width = window.innerWidth / modifier + "px";
+  canvas.value.style.height = window.innerWidth / modifier + "px";
   ctx.value.clearRect(0, 0, canvas.value.width, canvas.value.height);
+
   // Scale based on the devicePixelRatio
   ctx.value.scale(dpr, dpr);
   drawWheel();
