@@ -33,8 +33,8 @@ const resizeCanvas = (): void => {
     return;
   }
   //Check to size down the wheel when on bigger screens
-  let modifier = 2;
-  if (window.innerWidth > 1024) {
+  let modifier = 1.5;
+  if (window.innerWidth > 768) {
     modifier = 3;
   }
 
@@ -122,12 +122,13 @@ const drawWheel = (): void => {
   ctx.value.stroke();
 
   // Draw the pointer
+  // Radius used here for respositivity
   ctx.value.translate(radius * 1.15, centerY);
   ctx.value.rotate(Math.PI * 2);
   ctx.value.beginPath();
   ctx.value.moveTo(radius * 0.8, 0);
-  ctx.value.lineTo(radius * 0.95, -10);
-  ctx.value.lineTo(radius * 0.95, 10);
+  ctx.value.lineTo(radius * 0.95, radius * -0.05);
+  ctx.value.lineTo(radius * 0.95, radius * 0.05);
   ctx.value.fillStyle = "#FFFFFF";
   ctx.value.fill();
 };
@@ -135,11 +136,6 @@ const drawWheel = (): void => {
 
 <template>
   <div class="flex items-center justify-center">
-    <canvas
-      class="border-2 border-red-500"
-      width="500"
-      height="500"
-      ref="canvas"
-    ></canvas>
+    <canvas width="500" height="500" ref="canvas"></canvas>
   </div>
 </template>

@@ -5,9 +5,9 @@ import EntryPanel from "./components/EntryPanel.vue";
 
 <template>
   <section class="h-screen w-screen bg-neutral-900">
-    <div class="border-2 border-yellow-400">
-      <Wheel class="border-2" />
-      <EntryPanel class="mt-10" />
+    <div class="my-auto justify-center pt-16">
+      <Wheel />
+      <!-- <EntryPanel class="mt-10" /> -->
     </div>
   </section>
 </template>
