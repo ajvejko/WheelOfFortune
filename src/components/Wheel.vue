@@ -8,27 +8,14 @@ const ctx = ref<CanvasRenderingContext2D | null>(null);
 const dpr = window.devicePixelRatio || 1;
 
 onMounted(() => {
-  // Type narrowing
-  if (!canvas.value) {
-    return;
-  }
   // Get the canvas context
-  ctx.value = canvas.value.getContext("2d");
-
-  // Set the canvas size
-  canvas.value.width = window.innerWidth * dpr;
-  canvas.value.height = window.innerWidth * dpr;
-  // Set the actual canvas size
-  canvas.value.style.width = window.innerWidth / dpr + "px";
-  canvas.value.style.height = window.innerWidth / dpr + "px";
+  ctx.value = canvas.value?.getContext("2d") || null;
   // Type narrowing
-  if (!ctx.value) {
+  if (!ctx.value || !canvas.value) {
     return;
   }
-  // Scale based on the devicePixelRatio
-  ctx.value.scale(dpr, dpr);
-  render();
-
+  // Automatically sets the size of canvas and calls drawWheel()
+  resizeCanvas();
   // Listen for window resize event
   window.addEventListener("resize", resizeCanvas);
 });
@@ -36,24 +23,25 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener("resize", resizeCanvas);
 });
-
+// Gets called whenver a window gets resized
 const resizeCanvas = (): void => {
   // Type narrowing
   if (!ctx.value || !canvas.value) {
     return;
   }
-  ctx.value.clearRect(0, 0, canvas.value.width, canvas.value.height);
   // Set the canvas size
   canvas.value.width = window.innerWidth * dpr;
   canvas.value.height = window.innerWidth * dpr;
   // Set the actual canvas size
   canvas.value.style.width = window.innerWidth / dpr + "px";
   canvas.value.style.height = window.innerWidth / dpr + "px";
+  ctx.value.clearRect(0, 0, canvas.value.width, canvas.value.height);
+  // Scale based on the devicePixelRatio
   ctx.value.scale(dpr, dpr);
-  render();
+  drawWheel();
 };
 
-const render = (): void => {
+const drawWheel = (): void => {
   // Type narrowing
   if (!ctx.value || !canvas.value) {
     return;
