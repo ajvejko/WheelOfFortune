@@ -1,1 +1,1 @@
-# SpinTheWheel
+# WheelOfFortune
