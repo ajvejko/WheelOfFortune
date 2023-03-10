@@ -27,12 +27,13 @@ watchEffect(() => {
 });
 </script>
 <template>
-  <div class="mx-6 mt-16 flex flex-col">
+  <div class="mx-6 mt-16 flex h-[60vh] flex-col">
     <div class="flex justify-evenly text-slate-100">
       <span>Entries</span>
       <span>Results</span>
     </div>
-    <div class="h-screen rounded-xl bg-neutral-800 p-3">
+
+    <div class="mt-1 grow rounded-xl bg-neutral-800 p-3">
       <textarea
         type="text"
         v-model="entries"
