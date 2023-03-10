@@ -7,6 +7,9 @@ module.exports = {
         roboto: "'Roboto', serif",
         inter: "'Inter', serif",
       },
+      colors: {
+        bgCustom: "#141314",
+      },
     },
   },
   plugins: [],

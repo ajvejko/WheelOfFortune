@@ -36,7 +36,7 @@ watchEffect(() => {
       <textarea
         type="text"
         v-model="entries"
-        placeholder="Entry 1&#10;Entry 2&#10;Entry 3, Entry 4; Entry 5; Entry 6&#10;&#10;Split your entries by using ',' or ';' or new line."
+        placeholder="Entry 1, Entry 2; Entry3;&#10;Entry 4; Entry 5, Entry 6 &#10;&#10;Split your entries by using ',' or ';' &#10;or new line."
         class="h-full w-full resize-none rounded-xl border-2 bg-transparent px-2 py-1 text-slate-100 focus:outline-none"
       >
       </textarea>
