@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref } from "vue";
+import { onMounted, onUnmounted, ref, watch } from "vue";
 import { entryNames, entryColors } from "../Store/Entries";
 
 const canvas = ref<HTMLCanvasElement | null>(null);
 const ctx = ref<CanvasRenderingContext2D | null>(null);
-
 const dpr = window.devicePixelRatio || 1;
 
 onMounted(() => {
@@ -26,6 +25,12 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener("resize", resizeCanvas);
 });
+
+// Watches if array of entries was changed if so, resizes canvas.
+watch(entryNames, () => {
+  resizeCanvas();
+});
+
 // Gets called whenver a window gets resized
 const resizeCanvas = (): void => {
   // Type narrowing
@@ -33,9 +38,11 @@ const resizeCanvas = (): void => {
     return;
   }
   //Check to size down the wheel when on bigger screens
-  let modifier = 1.5;
-  if (window.innerWidth > 768) {
-    modifier = 3;
+  let modifier = 1.6;
+  if (window.innerWidth >= 640 && window.innerWidth < 1024) {
+    modifier = 2;
+  } else if (window.innerWidth >= 1024) {
+    modifier = 3.5;
   }
 
   // Set the canvas size

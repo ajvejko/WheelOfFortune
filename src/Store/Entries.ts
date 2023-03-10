@@ -1,4 +1,6 @@
-export let entryNames: string[] = [
+import { reactive } from "vue";
+
+export let entryNames = reactive([
   //List of entries
   "Entry 1",
   "Entry 2",
@@ -6,7 +8,7 @@ export let entryNames: string[] = [
   "Entry 4",
   "Entry 5",
   "Entry 6",
-];
+]);
 
 export const entryColors: string[] = [
   // List of colors that are used to generate the wheel
