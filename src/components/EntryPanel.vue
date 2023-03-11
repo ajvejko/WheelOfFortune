@@ -33,7 +33,7 @@ watchEffect(() => {
       <span>Results</span>
     </div>
 
-    <div class="mt-1 grow rounded-xl bg-neutral-800 p-3">
+    <div class="mt-1 grow rounded-xl bg-[#1E1E1E] p-3">
       <textarea
         type="text"
         v-model="entries"

@@ -26,7 +26,7 @@ onUnmounted(() => {
   window.removeEventListener("resize", resizeCanvas);
 });
 
-// Watches if array of entries was changed if so, resizes canvas.
+// Watches if array of entries was changed if so, resizes canvas which calls drawWheel().
 watch(entryNames, () => {
   resizeCanvas();
 });
