@@ -6,11 +6,14 @@ const entries = ref("");
 
 watchEffect(() => {
   if (entries.value !== "") {
+    entries.value.trim();
+    console.log(entries.value);
     const value: string[] = entries.value.split(/[\n,;]/);
 
-    // Clears array and then inserts new values
+    // Clears array
     entryNames.length = 0;
-    entryNames.push(...value);
+    // Inserts new values while filtering out empty spaces
+    entryNames.push(...value.filter((str) => str.trim() !== ""));
   } //If textarea is empty, it will show placeholder
   else {
     entryNames.length = 0;
