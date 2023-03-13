@@ -72,17 +72,18 @@ const drawWheel = (): void => {
   const centerY = realCanvasWidth / 2;
   const numEntries = entryNames.length;
   const angle = (2 * Math.PI) / numEntries;
-  //Calculate the font size
-  const fontSize = Math.min(
-    realCanvasWidth / (numEntries + 3),
-    realCanvasWidth / 15
-  );
+
+  // Calculate the maximum font size that would fit in each arc
+  const maxFontSize = radius / numEntries;
 
   // Draw the wheel
   for (let i = 0; i < numEntries; i++) {
     let startAngle = i * angle;
     let endAngle = (i + 1) * angle;
-    const color = entryColors[i % entryColors.length];
+    let color = entryColors[i % entryColors.length];
+
+    //Calculate the font size
+    const fontSize = Math.min(maxFontSize, radius / entryNames[i].length);
 
     // Draw the arc
     ctx.value.beginPath();
@@ -101,7 +102,7 @@ const drawWheel = (): void => {
     ctx.value.rotate(midAngle);
 
     // Draw the entry name
-    const textRadius = radius * 0.6;
+    const textRadius = radius * 0.55;
     ctx.value.font = `${fontSize}px Arial`;
     ctx.value.fillStyle = "#FFFFFF";
     ctx.value.textAlign = "center";

@@ -7,7 +7,6 @@ const entries = ref("");
 watchEffect(() => {
   if (entries.value !== "") {
     entries.value.trim();
-    console.log(entries.value);
     const value: string[] = entries.value.split(/[\n,;]/);
 
     // Clears array
@@ -18,7 +17,6 @@ watchEffect(() => {
   else {
     entryNames.length = 0;
     entryNames.push(
-      //List of entries
       "Entry 1",
       "Entry 2",
       "Entry 3",
