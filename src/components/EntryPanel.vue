@@ -4,26 +4,34 @@ import { ref, watchEffect } from "vue";
 
 const entries = ref("");
 
-watchEffect(() => {
-  if (entries.value !== "") {
-    entries.value.trim();
-    const value: string[] = entries.value.split(/[\n,;]/);
+// Set default entry names
+const defaultEntryNames = [
+  "Entry 1",
+  "Entry 2",
+  "Entry 3",
+  "Entry 4",
+  "Entry 5",
+  "Entry 6",
+];
 
-    // Clears array
-    entryNames.length = 0;
-    // Inserts new values while filtering out empty spaces
-    entryNames.push(...value.filter((str) => str.trim() !== ""));
-  } //If textarea is empty, it will show placeholder
-  else {
-    entryNames.length = 0;
-    entryNames.push(
-      "Entry 1",
-      "Entry 2",
-      "Entry 3",
-      "Entry 4",
-      "Entry 5",
-      "Entry 6"
-    );
+// Initialize entryNames with default values
+entryNames.push(...defaultEntryNames);
+
+const updateEntryNames = (input: string): void => {
+  const value: string[] = input.split(/[\n,;]/);
+  entryNames.length = 0;
+  entryNames.push(...value.filter((str) => str.trim() !== ""));
+};
+
+// Initialize entryNames with default values
+entryNames.push(...defaultEntryNames);
+
+watchEffect(() => {
+  const trimmedEntries = entries.value.trim();
+  if (trimmedEntries !== "") {
+    updateEntryNames(trimmedEntries);
+  } else {
+    updateEntryNames(defaultEntryNames.join(","));
   }
 });
 </script>
