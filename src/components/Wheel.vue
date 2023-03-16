@@ -93,6 +93,14 @@ const drawWheel = (currentAngle: number): void => {
     ctx.value.arc(centerX, centerY, radius, startAngle, endAngle);
     ctx.value.closePath();
     ctx.value.fillStyle = color;
+
+    // Set shadow properties to render shadows around arcs and text too
+    ctx.value.shadowColor = "rgba(0, 0, 0, 0.5)";
+    ctx.value.shadowBlur = 20;
+    ctx.value.shadowOffsetX = 0;
+    ctx.value.shadowOffsetY = 0;
+
+    // Fill in the arcs
     ctx.value.fill();
 
     // Save the context state
@@ -117,10 +125,6 @@ const drawWheel = (currentAngle: number): void => {
   // Draw the inner white circle
   ctx.value.beginPath();
   ctx.value.arc(centerX, centerY, radius * 0.1, 0, 2 * Math.PI);
-  ctx.value.shadowColor = "rgba(0, 0, 0, 0.5)";
-  ctx.value.shadowBlur = 20;
-  ctx.value.shadowOffsetX = 0;
-  ctx.value.shadowOffsetY = 0;
   ctx.value.fillStyle = "#FFFFFF";
   ctx.value.fill();
 
@@ -142,7 +146,7 @@ const drawWheel = (currentAngle: number): void => {
   ctx.value.restore();
 };
 
-const spin = async (): Promise<void> => {
+const spin = (): void => {
   const startTime = Date.now();
   const endTime = startTime + spinTime.value * 1000;
   const spinAngleStart = Math.floor(Math.random() * 180); // Random starting angle
@@ -150,6 +154,7 @@ const spin = async (): Promise<void> => {
   let currentAngle = spinAngleStart;
 
   const animate = () => {
+    // Type narrowing
     if (!ctx.value || !canvas.value) {
       return;
     }
