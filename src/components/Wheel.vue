@@ -5,6 +5,7 @@ import { entryNames, entryColors } from "../Store/Entries";
 const canvas = ref<HTMLCanvasElement | null>(null);
 const ctx = ref<CanvasRenderingContext2D | null>(null);
 const dpr = window.devicePixelRatio || 1;
+const spinTime = ref(5); // Spin time in seconds
 
 onMounted(() => {
   // Get the canvas context
@@ -56,14 +57,15 @@ const resizeCanvas = (): void => {
 
   // Scale based on the devicePixelRatio
   ctx.value.scale(dpr, dpr);
-  drawWheel();
+  drawWheel(1);
 };
 
-const drawWheel = (): void => {
+const drawWheel = (currentAngle: number): void => {
   // Type narrowing
   if (!ctx.value || !canvas.value) {
     return;
   }
+
   // Set the wheel parameters
   const lineWidth = 5;
   const realCanvasWidth = canvas.value.width / dpr;
@@ -78,8 +80,8 @@ const drawWheel = (): void => {
 
   // Draw the wheel
   for (let i = 0; i < numEntries; i++) {
-    let startAngle = i * angle;
-    let endAngle = (i + 1) * angle;
+    let startAngle = i * angle + currentAngle;
+    let endAngle = (i + 1) * angle + currentAngle;
     let color = entryColors[i % entryColors.length];
 
     //Calculate the font size
@@ -130,20 +132,50 @@ const drawWheel = (): void => {
   ctx.value.stroke();
 
   // Draw the pointer
-  // Radius used here for respositivity
-  ctx.value.translate(radius * 1.15, centerY);
-  ctx.value.rotate(Math.PI * 2);
+  ctx.value.save(); // Reset the context transformation
   ctx.value.beginPath();
-  ctx.value.moveTo(radius * 0.8, 0);
-  ctx.value.lineTo(radius * 0.95, radius * -0.05);
-  ctx.value.lineTo(radius * 0.95, radius * 0.05);
+  ctx.value.moveTo(centerX + radius * 0.8, centerY);
+  ctx.value.lineTo(centerX + radius * 0.95, centerY + radius * -0.05);
+  ctx.value.lineTo(centerX + radius * 0.95, centerY + radius * 0.05);
   ctx.value.fillStyle = "#FFFFFF";
   ctx.value.fill();
+  ctx.value.restore();
+};
+
+const spin = async (): Promise<void> => {
+  const startTime = Date.now();
+  const endTime = startTime + spinTime.value * 1000;
+  const spinAngleStart = Math.floor(Math.random() * 180); // Random starting angle
+  let currentTime = startTime;
+  let currentAngle = spinAngleStart;
+
+  const animate = () => {
+    if (!ctx.value || !canvas.value) {
+      return;
+    }
+
+    currentTime = Date.now();
+    const progress = Math.min(
+      (currentTime - startTime) / (endTime - startTime),
+      1
+    );
+    const easing = 1 - Math.pow(1 - progress, 3);
+    currentAngle = spinAngleStart + easing * (Math.PI * 2 * spinTime.value);
+
+    ctx.value.clearRect(0, 0, canvas.value.width, canvas.value.height);
+    drawWheel(currentAngle);
+
+    if (currentTime < endTime) {
+      requestAnimationFrame(animate);
+    }
+  };
+
+  requestAnimationFrame(animate);
 };
 </script>
 
 <template>
   <div class="flex items-center justify-center">
-    <canvas width="500" height="500" ref="canvas"></canvas>
+    <canvas @click="spin" width="500" height="500" ref="canvas"></canvas>
   </div>
 </template>
