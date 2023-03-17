@@ -96,7 +96,6 @@ const drawInnerWheel = (currentAngle: number): void => {
   const radius = realCanvasWidth / 2.1;
   const centerX = realCanvasWidth / 2;
   const centerY = realCanvasWidth / 2;
-  const lineWidth = innerCanvas.value.width / 250;
   const numEntries = entryNames.length;
   const angle = (2 * Math.PI) / numEntries;
 
@@ -160,10 +159,17 @@ const drawOuterWheel = () => {
   const centerY = realCanvasWidth / 2;
   const lineWidth = outerCanvas.value.width / 250;
 
+  // Set shadow properties to render shadows around arcs and text too
+  outerCtx.value.shadowColor = "rgba(0, 0, 0, 0.8)";
+  outerCtx.value.shadowBlur = 80;
+  outerCtx.value.shadowOffsetX = 0;
+  outerCtx.value.shadowOffsetY = 0;
+
   // Draw the inner white circle
   outerCtx.value.beginPath();
   outerCtx.value.arc(centerX, centerY, radius * 0.1, 0, 2 * Math.PI);
   outerCtx.value.fillStyle = "#FFFFFF";
+
   outerCtx.value.fill();
 
   // Draw the outer white circle
@@ -174,11 +180,12 @@ const drawOuterWheel = () => {
   outerCtx.value.stroke();
 
   // Draw the pointer
+  outerCtx.value.shadowBlur = 0;
   outerCtx.value.save(); // Reset the context transformation
   outerCtx.value.beginPath();
-  outerCtx.value.moveTo(centerX + radius * 0.8, centerY);
-  outerCtx.value.lineTo(centerX + radius * 0.95, centerY + radius * -0.05);
-  outerCtx.value.lineTo(centerX + radius * 0.95, centerY + radius * 0.05);
+  outerCtx.value.moveTo(centerX + radius * 0.86, centerY);
+  outerCtx.value.lineTo(centerX + radius, centerY + radius * -0.06);
+  outerCtx.value.lineTo(centerX + radius, centerY + radius * 0.06);
   outerCtx.value.fillStyle = "#FFFFFF";
   outerCtx.value.fill();
   outerCtx.value.restore();
