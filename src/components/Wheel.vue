@@ -2,10 +2,11 @@
 import { onMounted, onUnmounted, ref, watch } from "vue";
 import { entryNames, entryColors } from "../Store/Entries";
 
+// Create references for the canvas element and its 2D context
 const canvas = ref<HTMLCanvasElement | null>(null);
 const ctx = ref<CanvasRenderingContext2D | null>(null);
-const dpr = window.devicePixelRatio || 1;
-const spinTime = ref(5); // Spin time in seconds
+const dpr = window.devicePixelRatio || 1; // Get the device pixel ratio
+const spinTime = ref(15); // Spin time in seconds
 
 onMounted(() => {
   // Get the canvas context
@@ -32,7 +33,7 @@ watch(entryNames, () => {
   resizeCanvas();
 });
 
-// Gets called whenver a window gets resized
+// Function to resize canvas, gets called whenever window gets resized
 const resizeCanvas = (): void => {
   // Type narrowing
   if (!ctx.value || !canvas.value) {
@@ -57,9 +58,10 @@ const resizeCanvas = (): void => {
 
   // Scale based on the devicePixelRatio
   ctx.value.scale(dpr, dpr);
-  drawWheel(1);
+  drawWheel(0);
 };
 
+// Draws the actual wheel
 const drawWheel = (currentAngle: number): void => {
   // Type narrowing
   if (!ctx.value || !canvas.value) {
@@ -67,11 +69,11 @@ const drawWheel = (currentAngle: number): void => {
   }
 
   // Set the wheel parameters
-  const lineWidth = 5;
   const realCanvasWidth = canvas.value.width / dpr;
   const radius = realCanvasWidth / 2.1;
   const centerX = realCanvasWidth / 2;
   const centerY = realCanvasWidth / 2;
+  const lineWidth = canvas.value.width / 250;
   const numEntries = entryNames.length;
   const angle = (2 * Math.PI) / numEntries;
 
@@ -80,12 +82,9 @@ const drawWheel = (currentAngle: number): void => {
 
   // Draw the wheel
   for (let i = 0; i < numEntries; i++) {
-    let startAngle = i * angle + currentAngle;
-    let endAngle = (i + 1) * angle + currentAngle;
-    let color = entryColors[i % entryColors.length];
-
-    //Calculate the font size
-    const fontSize = Math.min(maxFontSize, radius / entryNames[i].length);
+    const startAngle = i * angle + currentAngle;
+    const endAngle = (i + 1) * angle + currentAngle;
+    const color = entryColors[i % entryColors.length];
 
     // Draw the arc
     ctx.value.beginPath();
@@ -93,12 +92,6 @@ const drawWheel = (currentAngle: number): void => {
     ctx.value.arc(centerX, centerY, radius, startAngle, endAngle);
     ctx.value.closePath();
     ctx.value.fillStyle = color;
-
-    // Set shadow properties to render shadows around arcs and text too
-    ctx.value.shadowColor = "rgba(0, 0, 0, 0.5)";
-    ctx.value.shadowBlur = 20;
-    ctx.value.shadowOffsetX = 0;
-    ctx.value.shadowOffsetY = 0;
 
     // Fill in the arcs
     ctx.value.fill();
@@ -111,13 +104,22 @@ const drawWheel = (currentAngle: number): void => {
     ctx.value.translate(centerX, centerY);
     ctx.value.rotate(midAngle);
 
+    // Check to see if the text is above maxLength
+    let entryName = entryNames[i];
+    if (entryNames[i].length >= 15) {
+      entryName = entryNames[i].slice(0, 15) + "...";
+    }
+
+    // Calculate the font size
+    const fontSize = Math.min(maxFontSize, (radius / entryName.length) * 1.5);
+
     // Draw the entry name
-    const textRadius = radius * 0.55;
+    const textRadius = radius * 0.6 - entryName.length * 2;
     ctx.value.font = `${fontSize}px Arial`;
     ctx.value.fillStyle = "#FFFFFF";
     ctx.value.textAlign = "center";
     ctx.value.textBaseline = "middle";
-    ctx.value.fillText(entryNames[i], textRadius, 0);
+    ctx.value.fillText(entryName, textRadius, 0);
 
     // Restore the context state
     ctx.value.restore();
@@ -146,6 +148,7 @@ const drawWheel = (currentAngle: number): void => {
   ctx.value.restore();
 };
 
+// Function that spins the wheel
 const spin = (): void => {
   const startTime = Date.now();
   const endTime = startTime + spinTime.value * 1000;
@@ -153,28 +156,35 @@ const spin = (): void => {
   let currentTime = startTime;
   let currentAngle = spinAngleStart;
 
+  // Animation function to update the wheel during spinning
   const animate = () => {
     // Type narrowing
     if (!ctx.value || !canvas.value) {
       return;
     }
 
-    currentTime = Date.now();
+    currentTime = Date.now(); //Update current time
+
+    //calculate progress 0 to 1, used in easing calculation
     const progress = Math.min(
       (currentTime - startTime) / (endTime - startTime),
       1
     );
-    const easing = 1 - Math.pow(1 - progress, 3);
+    const easing = 1 - Math.pow(1 - progress, 3); // Apply cubic easing
     currentAngle = spinAngleStart + easing * (Math.PI * 2 * spinTime.value);
+    console.log(easing);
 
+    // Clear the canvas and redraw the wheel with the updated angle
     ctx.value.clearRect(0, 0, canvas.value.width, canvas.value.height);
     drawWheel(currentAngle);
 
+    // Continue the animation if the end time has not been reached
     if (currentTime < endTime) {
       requestAnimationFrame(animate);
     }
   };
 
+  // Start the animation
   requestAnimationFrame(animate);
 };
 </script>
