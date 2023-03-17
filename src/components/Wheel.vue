@@ -2,22 +2,25 @@
 import { onMounted, onUnmounted, ref, watch } from "vue";
 import { entryNames, entryColors } from "../Store/Entries";
 
-// Create references for the canvas element and its 2D context
-const canvas = ref<HTMLCanvasElement | null>(null);
-const ctx = ref<CanvasRenderingContext2D | null>(null);
+// Create references for the innerCanvas element and its 2D context
+const innerCanvas = ref<HTMLCanvasElement | null>(null);
+const outerCanvas = ref<HTMLCanvasElement | null>(null);
+const innerCtx = ref<CanvasRenderingContext2D | null>(null);
+const outerCtx = ref<CanvasRenderingContext2D | null>(null);
 const dpr = window.devicePixelRatio || 1; // Get the device pixel ratio
 const spinTime = ref(15); // Spin time in seconds
 
 onMounted(() => {
-  // Get the canvas context
-  ctx.value = canvas.value?.getContext("2d") || null;
+  // Get the innerCanvas context
+  innerCtx.value = innerCanvas.value?.getContext("2d") || null;
+  outerCtx.value = outerCanvas.value?.getContext("2d") || null;
 
   // Type narrowing
-  if (!ctx.value || !canvas.value) {
+  if (!innerCtx.value || !innerCanvas.value || !outerCanvas.value) {
     return;
   }
 
-  // Automatically sets the size of canvas and calls drawWheel()
+  // Automatically sets the size of innerCanvas and calls drawInnerWheel()
   resizeCanvas();
 
   // Listen for window resize event
@@ -28,15 +31,20 @@ onUnmounted(() => {
   window.removeEventListener("resize", resizeCanvas);
 });
 
-// Watches if array of entries was changed if so, resizes canvas which calls drawWheel().
+// Watches if array of entries was changed if so, resizes innerCanvas which calls drawInnerWheel().
 watch(entryNames, () => {
   resizeCanvas();
 });
 
-// Function to resize canvas, gets called whenever window gets resized
+// Function to resize innerCanvas, gets called whenever window gets resized
 const resizeCanvas = (): void => {
   // Type narrowing
-  if (!ctx.value || !canvas.value) {
+  if (
+    !innerCtx.value ||
+    !outerCtx.value ||
+    !innerCanvas.value ||
+    !outerCanvas.value
+  ) {
     return;
   }
   //Check to size down the wheel when on bigger screens
@@ -46,34 +54,49 @@ const resizeCanvas = (): void => {
   } else if (window.innerWidth >= 1024) {
     modifier = 3.5;
   }
+  // Calculate widths for the canvas
+  const scaledCanvasdWidth = window.innerWidth * dpr;
+  const actualCanvasWidth = window.innerWidth / modifier;
 
-  // Set the canvas size
-  canvas.value.width = window.innerWidth * dpr;
-  canvas.value.height = window.innerWidth * dpr;
+  // Set the Canvas size
+  innerCanvas.value.width = scaledCanvasdWidth;
+  innerCanvas.value.height = scaledCanvasdWidth;
+  outerCanvas.value.width = scaledCanvasdWidth;
+  outerCanvas.value.height = scaledCanvasdWidth;
 
-  // Set the actual canvas size
-  canvas.value.style.width = window.innerWidth / modifier + "px";
-  canvas.value.style.height = window.innerWidth / modifier + "px";
-  ctx.value.clearRect(0, 0, canvas.value.width, canvas.value.height);
+  // Set the actual Canvas size, this keeps the sharpness on retina screens
+  innerCanvas.value.style.width = actualCanvasWidth + "px";
+  innerCanvas.value.style.height = actualCanvasWidth + "px";
+  outerCanvas.value.style.width = actualCanvasWidth + "px";
+  outerCanvas.value.style.height = actualCanvasWidth + "px";
+
+  innerCtx.value.clearRect(
+    0,
+    0,
+    innerCanvas.value.width,
+    innerCanvas.value.height
+  );
 
   // Scale based on the devicePixelRatio
-  ctx.value.scale(dpr, dpr);
-  drawWheel(0);
+  innerCtx.value.scale(dpr, dpr);
+  outerCtx.value.scale(dpr, dpr);
+  drawInnerWheel(0);
+  drawOuterWheel();
 };
 
 // Draws the actual wheel
-const drawWheel = (currentAngle: number): void => {
+const drawInnerWheel = (currentAngle: number): void => {
   // Type narrowing
-  if (!ctx.value || !canvas.value) {
+  if (!innerCtx.value || !innerCanvas.value) {
     return;
   }
 
   // Set the wheel parameters
-  const realCanvasWidth = canvas.value.width / dpr;
+  const realCanvasWidth = innerCanvas.value.width / dpr;
   const radius = realCanvasWidth / 2.1;
   const centerX = realCanvasWidth / 2;
   const centerY = realCanvasWidth / 2;
-  const lineWidth = canvas.value.width / 250;
+  const lineWidth = innerCanvas.value.width / 250;
   const numEntries = entryNames.length;
   const angle = (2 * Math.PI) / numEntries;
 
@@ -87,22 +110,22 @@ const drawWheel = (currentAngle: number): void => {
     const color = entryColors[i % entryColors.length];
 
     // Draw the arc
-    ctx.value.beginPath();
-    ctx.value.moveTo(centerX, centerY);
-    ctx.value.arc(centerX, centerY, radius, startAngle, endAngle);
-    ctx.value.closePath();
-    ctx.value.fillStyle = color;
+    innerCtx.value.beginPath();
+    innerCtx.value.moveTo(centerX, centerY);
+    innerCtx.value.arc(centerX, centerY, radius, startAngle, endAngle);
+    innerCtx.value.closePath();
+    innerCtx.value.fillStyle = color;
 
     // Fill in the arcs
-    ctx.value.fill();
+    innerCtx.value.fill();
 
     // Save the context state
-    ctx.value.save();
+    innerCtx.value.save();
 
     // Rotate the context to center the text on the arc
     let midAngle = (startAngle + endAngle) / 2;
-    ctx.value.translate(centerX, centerY);
-    ctx.value.rotate(midAngle);
+    innerCtx.value.translate(centerX, centerY);
+    innerCtx.value.rotate(midAngle);
 
     // Check to see if the text is above maxLength
     let entryName = entryNames[i];
@@ -115,37 +138,50 @@ const drawWheel = (currentAngle: number): void => {
 
     // Draw the entry name
     const textRadius = radius * 0.6 - entryName.length * 2;
-    ctx.value.font = `${fontSize}px Arial`;
-    ctx.value.fillStyle = "#FFFFFF";
-    ctx.value.textAlign = "center";
-    ctx.value.textBaseline = "middle";
-    ctx.value.fillText(entryName, textRadius, 0);
+    innerCtx.value.font = `${fontSize}px Arial`;
+    innerCtx.value.fillStyle = "#FFFFFF";
+    innerCtx.value.textAlign = "center";
+    innerCtx.value.textBaseline = "middle";
+    innerCtx.value.fillText(entryName, textRadius, 0);
 
     // Restore the context state
-    ctx.value.restore();
+    innerCtx.value.restore();
   }
+};
+
+const drawOuterWheel = () => {
+  if (!outerCtx.value || !outerCanvas.value) {
+    return;
+  }
+  // Set the wheel parameters
+  const realCanvasWidth = outerCanvas.value.width / dpr;
+  const radius = realCanvasWidth / 2.1;
+  const centerX = realCanvasWidth / 2;
+  const centerY = realCanvasWidth / 2;
+  const lineWidth = outerCanvas.value.width / 250;
+
   // Draw the inner white circle
-  ctx.value.beginPath();
-  ctx.value.arc(centerX, centerY, radius * 0.1, 0, 2 * Math.PI);
-  ctx.value.fillStyle = "#FFFFFF";
-  ctx.value.fill();
+  outerCtx.value.beginPath();
+  outerCtx.value.arc(centerX, centerY, radius * 0.1, 0, 2 * Math.PI);
+  outerCtx.value.fillStyle = "#FFFFFF";
+  outerCtx.value.fill();
 
   // Draw the outer white circle
-  ctx.value.beginPath();
-  ctx.value.arc(centerX, centerY, radius + lineWidth / 2, 0, 2 * Math.PI);
-  ctx.value.lineWidth = lineWidth;
-  ctx.value.strokeStyle = "#FFFFFF";
-  ctx.value.stroke();
+  outerCtx.value.beginPath();
+  outerCtx.value.arc(centerX, centerY, radius + lineWidth / 2, 0, 2 * Math.PI);
+  outerCtx.value.lineWidth = lineWidth;
+  outerCtx.value.strokeStyle = "#FFFFFF";
+  outerCtx.value.stroke();
 
   // Draw the pointer
-  ctx.value.save(); // Reset the context transformation
-  ctx.value.beginPath();
-  ctx.value.moveTo(centerX + radius * 0.8, centerY);
-  ctx.value.lineTo(centerX + radius * 0.95, centerY + radius * -0.05);
-  ctx.value.lineTo(centerX + radius * 0.95, centerY + radius * 0.05);
-  ctx.value.fillStyle = "#FFFFFF";
-  ctx.value.fill();
-  ctx.value.restore();
+  outerCtx.value.save(); // Reset the context transformation
+  outerCtx.value.beginPath();
+  outerCtx.value.moveTo(centerX + radius * 0.8, centerY);
+  outerCtx.value.lineTo(centerX + radius * 0.95, centerY + radius * -0.05);
+  outerCtx.value.lineTo(centerX + radius * 0.95, centerY + radius * 0.05);
+  outerCtx.value.fillStyle = "#FFFFFF";
+  outerCtx.value.fill();
+  outerCtx.value.restore();
 };
 
 // Function that spins the wheel
@@ -159,11 +195,12 @@ const spin = (): void => {
   // Animation function to update the wheel during spinning
   const animate = () => {
     // Type narrowing
-    if (!ctx.value || !canvas.value) {
+    if (!innerCtx.value || !innerCanvas.value) {
       return;
     }
 
-    currentTime = Date.now(); //Update current time
+    //Update current time
+    currentTime = Date.now();
 
     //calculate progress 0 to 1, used in easing calculation
     const progress = Math.min(
@@ -174,9 +211,15 @@ const spin = (): void => {
     currentAngle = spinAngleStart + easing * (Math.PI * 2 * spinTime.value);
     console.log(easing);
 
-    // Clear the canvas and redraw the wheel with the updated angle
-    ctx.value.clearRect(0, 0, canvas.value.width, canvas.value.height);
-    drawWheel(currentAngle);
+    // Clear the innerCanvas and redraw the wheel with the updated angle
+    innerCtx.value.clearRect(
+      0,
+      0,
+      innerCanvas.value.width,
+      innerCanvas.value.height
+    );
+    // Render rotated wheel with the new angle
+    drawInnerWheel(currentAngle);
 
     // Continue the animation if the end time has not been reached
     if (currentTime < endTime) {
@@ -190,7 +233,15 @@ const spin = (): void => {
 </script>
 
 <template>
-  <div class="flex items-center justify-center">
-    <canvas @click="spin" width="500" height="500" ref="canvas"></canvas>
+  <div class="flex items-center justify-center" @click="spin">
+    <canvas width="500" height="500" ref="innerCanvas"></canvas>
+    <!-- 2nd canvas to render static parts, helps with performance on retina screens,
+         shadows are way too expensive to render inside animation -->
+    <canvas
+      width="500"
+      height="500"
+      class="absolute z-10"
+      ref="outerCanvas"
+    ></canvas>
   </div>
 </template>
