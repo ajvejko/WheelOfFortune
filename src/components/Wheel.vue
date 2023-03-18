@@ -80,7 +80,7 @@ const resizeCanvas = (): void => {
   outerCtx.value.scale(dpr, dpr);
 
   drawInnerWheel(0);
-  drawOuterWheel();
+  drawOuterWheel(outerCtx.value, outerCanvas.value);
 };
 
 // Draws the actual wheel
@@ -180,47 +180,50 @@ const drawInnerWheel = (currentAngle: number): void => {
   }
 };
 
-const drawOuterWheel = () => {
-  if (!outerCtx.value || !outerCanvas.value) {
+const drawOuterWheel = (
+  ctx: CanvasRenderingContext2D,
+  canvas: HTMLCanvasElement
+) => {
+  if (!ctx || !canvas) {
     return;
   }
   // Set the wheel parameters
-  const realCanvasWidth = outerCanvas.value.width / dpr;
+  const realCanvasWidth = canvas.width / dpr;
   const radius = realCanvasWidth / 2.1;
   const centerX = realCanvasWidth / 2;
   const centerY = realCanvasWidth / 2;
-  const lineWidth = outerCanvas.value.width / 250;
+  const lineWidth = canvas.width / 250;
 
-  // Set shadow properties to render shadows around arcs and text too
-  outerCtx.value.shadowColor = "rgba(0, 0, 0, 0.8)";
-  outerCtx.value.shadowBlur = 80;
-  outerCtx.value.shadowOffsetX = 0;
-  outerCtx.value.shadowOffsetY = 0;
+  // Set shadow properties to render shadows on outerCanvas
+  ctx.shadowColor = "rgba(0, 0, 0, 0.8)";
+  ctx.shadowBlur = 80;
+  ctx.shadowOffsetX = 0;
+  ctx.shadowOffsetY = 0;
 
   // Draw the inner white circle
-  outerCtx.value.beginPath();
-  outerCtx.value.arc(centerX, centerY, radius * 0.1, 0, 2 * Math.PI);
-  outerCtx.value.fillStyle = "#FFFFFF";
+  ctx.beginPath();
+  ctx.arc(centerX, centerY, radius * 0.1, 0, 2 * Math.PI);
+  ctx.fillStyle = "#FFFFFF";
 
-  outerCtx.value.fill();
+  ctx.fill();
 
   // Draw the outer white circle
-  outerCtx.value.beginPath();
-  outerCtx.value.arc(centerX, centerY, radius + lineWidth / 2, 0, 2 * Math.PI);
-  outerCtx.value.lineWidth = lineWidth;
-  outerCtx.value.strokeStyle = "#FFFFFF";
-  outerCtx.value.stroke();
+  ctx.beginPath();
+  ctx.arc(centerX, centerY, radius + lineWidth / 2, 0, 2 * Math.PI);
+  ctx.lineWidth = lineWidth;
+  ctx.strokeStyle = "#FFFFFF";
+  ctx.stroke();
 
   // Draw the pointer
-  outerCtx.value.shadowBlur = 0;
-  outerCtx.value.save(); // Reset the context transformation
-  outerCtx.value.beginPath();
-  outerCtx.value.moveTo(centerX + radius * 0.86, centerY);
-  outerCtx.value.lineTo(centerX + radius, centerY + radius * -0.06);
-  outerCtx.value.lineTo(centerX + radius, centerY + radius * 0.06);
-  outerCtx.value.fillStyle = "#FFFFFF";
-  outerCtx.value.fill();
-  outerCtx.value.restore();
+  ctx.shadowBlur = 0;
+  ctx.save(); // Reset the context transformation
+  ctx.beginPath();
+  ctx.moveTo(centerX + radius * 0.86, centerY);
+  ctx.lineTo(centerX + radius, centerY + radius * -0.06);
+  ctx.lineTo(centerX + radius, centerY + radius * 0.06);
+  ctx.fillStyle = "#FFFFFF";
+  ctx.fill();
+  ctx.restore();
 };
 
 // Function that spins the wheel
