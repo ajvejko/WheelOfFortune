@@ -2,25 +2,29 @@
 import { onMounted, onUnmounted, ref, watch } from "vue";
 import { entryNames, entryColors } from "../Store/Entries";
 
-// Create references for the innerCanvas element and its 2D context
+// Create references for the caanvas element and its 2D context
 const innerCanvas = ref<HTMLCanvasElement | null>(null);
 const outerCanvas = ref<HTMLCanvasElement | null>(null);
 const innerCtx = ref<CanvasRenderingContext2D | null>(null);
 const outerCtx = ref<CanvasRenderingContext2D | null>(null);
-const dpr = window.devicePixelRatio || 1; // Get the device pixel ratio
+const dpr = window.devicePixelRatio || 1;
 const spinTime = ref(5); // Spin time in seconds
 
+// Function to get the 2D context from a canvas element
+const get2DContext = (
+  canvas: HTMLCanvasElement | null
+): CanvasRenderingContext2D | null => canvas?.getContext("2d") || null;
+
 onMounted(() => {
-  // Get the innerCanvas context
-  innerCtx.value = innerCanvas.value?.getContext("2d") || null;
-  outerCtx.value = outerCanvas.value?.getContext("2d") || null;
+  innerCtx.value = get2DContext(innerCanvas.value);
+  outerCtx.value = get2DContext(outerCanvas.value);
 
   // Type narrowing
   if (!innerCtx.value || !innerCanvas.value || !outerCanvas.value) {
     return;
   }
 
-  // Automatically sets the size of innerCanvas and calls drawInnerWheel()
+  // Automatically sets the size of canvas and calls drawInnerWheel()
   resizeCanvas();
 
   // Listen for window resize event
