@@ -8,7 +8,7 @@ const outerCanvas = ref<HTMLCanvasElement | null>(null);
 const innerCtx = ref<CanvasRenderingContext2D | null>(null);
 const outerCtx = ref<CanvasRenderingContext2D | null>(null);
 const dpr = window.devicePixelRatio || 1; // Get the device pixel ratio
-const spinTime = ref(15); // Spin time in seconds
+const spinTime = ref(5); // Spin time in seconds
 
 onMounted(() => {
   // Get the innerCanvas context
@@ -98,15 +98,24 @@ const drawInnerWheel = (currentAngle: number): void => {
   const centerY = realCanvasWidth / 2;
   const numEntries = entryNames.length;
   const angle = (2 * Math.PI) / numEntries;
+  const maxTextLength = 13;
 
   // Calculate the maximum font size that would fit in each arc
-  const maxFontSize = radius / numEntries;
+  const maxFontSize = Math.floor((radius / numEntries) * 0.8);
 
-  // Draw the wheel
+  // Draw the wheel with arcs
   for (let i = 0; i < numEntries; i++) {
     const startAngle = i * angle + currentAngle;
     const endAngle = (i + 1) * angle + currentAngle;
     const color = entryColors[i % entryColors.length];
+
+    // Calculate the text properties to be used in rendering text
+    const { entryName, fontSize, textRadius } = calculateTextProperties(
+      entryNames[i],
+      maxTextLength,
+      maxFontSize,
+      radius
+    );
 
     // Draw the arc
     innerCtx.value.beginPath();
@@ -126,23 +135,12 @@ const drawInnerWheel = (currentAngle: number): void => {
     innerCtx.value.translate(centerX, centerY);
     innerCtx.value.rotate(midAngle);
 
-    // Check to see if the text is above maxLength
-    let entryName = entryNames[i];
-    if (entryNames[i].length >= 15) {
-      entryName = entryNames[i].slice(0, 15) + "...";
-    }
-
-    // Calculate the font size
-    const fontSize = Math.min(maxFontSize, (radius / entryName.length) * 1.5);
-
     // Draw the entry name
-    const textRadius = radius * 0.6 - entryName.length * 2;
     innerCtx.value.font = `${fontSize}px Arial`;
     innerCtx.value.fillStyle = "#FFFFFF";
     innerCtx.value.textAlign = "center";
     innerCtx.value.textBaseline = "middle";
     innerCtx.value.fillText(entryName, textRadius, 0);
-
     // Restore the context state
     innerCtx.value.restore();
   }
@@ -191,6 +189,42 @@ const drawOuterWheel = () => {
   outerCtx.value.restore();
 };
 
+interface TextProperties {
+  entryName: string;
+  fontSize: number;
+  textRadius: number;
+}
+
+// Function to calculate text properties, gets called in drawInnerWheel()
+const calculateTextProperties = (
+  entryName: string,
+  maxTextLength: number,
+  maxFontSize: number,
+  radius: number
+): TextProperties => {
+  let fontSizeModifier = 0.96;
+  let textRadiusModifier = 0.67;
+
+  // Check to see if the text is above maxTextLength
+  if (entryName.length >= maxTextLength) {
+    entryName = entryName.slice(0, 13) + "...";
+    fontSizeModifier = 1.25;
+    textRadiusModifier = 0.7;
+  }
+
+  // Calculate the font size
+  const fontSize = Math.floor(
+    Math.min(maxFontSize, (radius / entryName.length) * fontSizeModifier)
+  );
+
+  // Calculate text radius
+  const textRadius = Math.max(
+    radius * textRadiusModifier - entryName.length * 1.8
+  );
+
+  return { entryName, fontSize, textRadius };
+};
+
 // Function that spins the wheel
 const spin = (): void => {
   const startTime = Date.now();
@@ -216,7 +250,6 @@ const spin = (): void => {
     );
     const easing = 1 - Math.pow(1 - progress, 3); // Apply cubic easing
     currentAngle = spinAngleStart + easing * (Math.PI * 2 * spinTime.value);
-    console.log(easing);
 
     // Clear the innerCanvas and redraw the wheel with the updated angle
     innerCtx.value.clearRect(
@@ -247,7 +280,7 @@ const spin = (): void => {
     <canvas
       width="500"
       height="500"
-      class="absolute z-10"
+      class="absolute"
       ref="outerCanvas"
     ></canvas>
   </div>
