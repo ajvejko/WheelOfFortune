@@ -38,7 +38,6 @@ watch(entryNames, () => {
 
 // Function to resize innerCanvas, gets called whenever window gets resized
 const resizeCanvas = (): void => {
-  // Type narrowing
   if (
     !innerCtx.value ||
     !outerCtx.value ||
@@ -47,46 +46,41 @@ const resizeCanvas = (): void => {
   ) {
     return;
   }
-  //Check to size down the wheel when on bigger screens
-  let modifier = 1.6;
-  if (window.innerWidth >= 640 && window.innerWidth < 1024) {
-    modifier = 2;
-  } else if (window.innerWidth >= 1024) {
-    modifier = 3.5;
-  }
-  // Calculate widths for the canvas
+
+  // Function to size down the wheel when on bigger screens
+  const getWindowModifier = (): number => {
+    if (window.innerWidth >= 640 && window.innerWidth < 1024) {
+      return 2;
+    } else if (window.innerWidth >= 1024) {
+      return 3.5;
+    }
+    return 1.6;
+  };
+
+  let modifier = getWindowModifier();
   const scaledCanvasdWidth = window.innerWidth * dpr;
   const actualCanvasWidth = window.innerWidth / modifier;
 
-  // Set the Canvas size
-  innerCanvas.value.width = scaledCanvasdWidth;
-  innerCanvas.value.height = scaledCanvasdWidth;
-  outerCanvas.value.width = scaledCanvasdWidth;
-  outerCanvas.value.height = scaledCanvasdWidth;
+  const setCanvasSize = (canvas: HTMLCanvasElement): void => {
+    canvas.width = scaledCanvasdWidth;
+    canvas.height = scaledCanvasdWidth;
+    canvas.style.width = `${actualCanvasWidth}px`;
+    canvas.style.height = `${actualCanvasWidth}px`;
+  };
 
-  // Set the actual Canvas size, this keeps the sharpness on retina screens
-  innerCanvas.value.style.width = actualCanvasWidth + "px";
-  innerCanvas.value.style.height = actualCanvasWidth + "px";
-  outerCanvas.value.style.width = actualCanvasWidth + "px";
-  outerCanvas.value.style.height = actualCanvasWidth + "px";
-
-  innerCtx.value.clearRect(
-    0,
-    0,
-    innerCanvas.value.width,
-    innerCanvas.value.height
-  );
+  setCanvasSize(innerCanvas.value);
+  setCanvasSize(outerCanvas.value);
 
   // Scale based on the devicePixelRatio
   innerCtx.value.scale(dpr, dpr);
   outerCtx.value.scale(dpr, dpr);
+
   drawInnerWheel(0);
   drawOuterWheel();
 };
 
 // Draws the actual wheel
 const drawInnerWheel = (currentAngle: number): void => {
-  // Type narrowing
   if (!innerCtx.value || !innerCanvas.value) {
     return;
   }
@@ -99,6 +93,42 @@ const drawInnerWheel = (currentAngle: number): void => {
   const numEntries = entryNames.length;
   const angle = (2 * Math.PI) / numEntries;
   const maxTextLength = 13;
+
+  type TextProperties = {
+    entryName: string;
+    fontSize: number;
+    textRadius: number;
+  };
+
+  // Function to calculate text properties, gets called in drawInnerWheel()
+  const calculateTextProperties = (
+    entryName: string,
+    maxTextLength: number,
+    maxFontSize: number,
+    radius: number
+  ): TextProperties => {
+    let fontSizeModifier = 0.96;
+    let textRadiusModifier = 0.67;
+
+    // Check to see if the text is above maxTextLength
+    if (entryName.length >= maxTextLength) {
+      entryName = entryName.slice(0, 13) + "...";
+      fontSizeModifier = 1.25;
+      textRadiusModifier = 0.7;
+    }
+
+    // Calculate the font size
+    const fontSize = Math.floor(
+      Math.min(maxFontSize, (radius / entryName.length) * fontSizeModifier)
+    );
+
+    // Calculate text radius
+    const textRadius = Math.max(
+      radius * textRadiusModifier - entryName.length * 1.8
+    );
+
+    return { entryName, fontSize, textRadius };
+  };
 
   // Calculate the maximum font size that would fit in each arc
   const maxFontSize = Math.floor((radius / numEntries) * 0.8);
@@ -187,42 +217,6 @@ const drawOuterWheel = () => {
   outerCtx.value.fillStyle = "#FFFFFF";
   outerCtx.value.fill();
   outerCtx.value.restore();
-};
-
-interface TextProperties {
-  entryName: string;
-  fontSize: number;
-  textRadius: number;
-}
-
-// Function to calculate text properties, gets called in drawInnerWheel()
-const calculateTextProperties = (
-  entryName: string,
-  maxTextLength: number,
-  maxFontSize: number,
-  radius: number
-): TextProperties => {
-  let fontSizeModifier = 0.96;
-  let textRadiusModifier = 0.67;
-
-  // Check to see if the text is above maxTextLength
-  if (entryName.length >= maxTextLength) {
-    entryName = entryName.slice(0, 13) + "...";
-    fontSizeModifier = 1.25;
-    textRadiusModifier = 0.7;
-  }
-
-  // Calculate the font size
-  const fontSize = Math.floor(
-    Math.min(maxFontSize, (radius / entryName.length) * fontSizeModifier)
-  );
-
-  // Calculate text radius
-  const textRadius = Math.max(
-    radius * textRadiusModifier - entryName.length * 1.8
-  );
-
-  return { entryName, fontSize, textRadius };
 };
 
 // Function that spins the wheel
