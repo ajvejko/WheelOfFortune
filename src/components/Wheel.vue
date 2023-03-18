@@ -27,7 +27,6 @@ onMounted(() => {
   // Automatically sets the size of canvas and calls drawInnerWheel()
   resizeCanvas();
 
-  // Listen for window resize event
   window.addEventListener("resize", resizeCanvas);
 });
 
@@ -40,7 +39,7 @@ watch(entryNames, () => {
   resizeCanvas();
 });
 
-// Function to resize innerCanvas, gets called whenever window gets resized
+// Function that gets called whenever window gets resized
 const resizeCanvas = (): void => {
   if (
     !innerCtx.value ||
@@ -93,7 +92,6 @@ const drawInnerWheel = (
     return;
   }
 
-  // Set the wheel parameters
   const realCanvasWidth = canvas.width / dpr;
   const radius = realCanvasWidth / 2.1;
   const centerX = realCanvasWidth / 2;
@@ -118,19 +116,16 @@ const drawInnerWheel = (
     let fontSizeModifier = 0.96;
     let textRadiusModifier = 0.67;
 
-    // Check to see if the text is above maxTextLength
     if (entryName.length >= maxTextLength) {
       entryName = entryName.slice(0, 13) + "...";
       fontSizeModifier = 1.25;
       textRadiusModifier = 0.7;
     }
 
-    // Calculate the font size
     const fontSize = Math.floor(
       Math.min(maxFontSize, (radius / entryName.length) * fontSizeModifier)
     );
 
-    // Calculate text radius
     const textRadius = Math.max(
       radius * textRadiusModifier - entryName.length * 1.8
     );
@@ -161,11 +156,8 @@ const drawInnerWheel = (
     ctx.arc(centerX, centerY, radius, startAngle, endAngle);
     ctx.closePath();
     ctx.fillStyle = color;
-
-    // Fill in the arcs
     ctx.fill();
 
-    // Save the context state
     ctx.save();
 
     // Rotate the context to center the text on the arc
@@ -179,7 +171,7 @@ const drawInnerWheel = (
     ctx.textAlign = "center";
     ctx.textBaseline = "middle";
     ctx.fillText(entryName, textRadius, 0);
-    // Restore the context state
+
     ctx.restore();
   }
 };
@@ -187,11 +179,11 @@ const drawInnerWheel = (
 const drawOuterWheel = (
   ctx: CanvasRenderingContext2D,
   canvas: HTMLCanvasElement
-) => {
+): void => {
   if (!ctx || !canvas) {
     return;
   }
-  // Set the wheel parameters
+
   const realCanvasWidth = canvas.width / dpr;
   const radius = realCanvasWidth / 2.1;
   const centerX = realCanvasWidth / 2;
@@ -208,7 +200,6 @@ const drawOuterWheel = (
   ctx.beginPath();
   ctx.arc(centerX, centerY, radius * 0.1, 0, 2 * Math.PI);
   ctx.fillStyle = "#FFFFFF";
-
   ctx.fill();
 
   // Draw the outer white circle
@@ -218,15 +209,17 @@ const drawOuterWheel = (
   ctx.strokeStyle = "#FFFFFF";
   ctx.stroke();
 
+  ctx.save();
+
   // Draw the pointer
   ctx.shadowBlur = 0;
-  ctx.save(); // Reset the context transformation
   ctx.beginPath();
   ctx.moveTo(centerX + radius * 0.86, centerY);
   ctx.lineTo(centerX + radius, centerY + radius * -0.06);
   ctx.lineTo(centerX + radius, centerY + radius * 0.06);
   ctx.fillStyle = "#FFFFFF";
   ctx.fill();
+
   ctx.restore();
 };
 
@@ -234,27 +227,25 @@ const animateSpin = () => {
   if (!innerCtx.value || !innerCanvas.value) {
     return;
   }
-  spin(innerCtx.value, innerCanvas.value);
+  spinWheel(innerCtx.value, innerCanvas.value);
 };
-// Function that spins the wheel
-const spin = (
+
+const spinWheel = (
   ctx: CanvasRenderingContext2D,
   canvas: HTMLCanvasElement
 ): void => {
   const startTime = Date.now();
   const endTime = startTime + spinTime.value * 1000;
-  const spinAngleStart = Math.floor(Math.random() * 180); // Random starting angle
+  const spinAngleStart = Math.floor(Math.random() * 180);
   let currentTime = startTime;
   let currentAngle = spinAngleStart;
 
-  // Animation function to update the wheel during spinning
+  // Animation function to update the wheel with updated values
   const animate = () => {
-    // Type narrowing
     if (!ctx || !canvas) {
       return;
     }
 
-    //Update current time
     currentTime = Date.now();
 
     //calculate progress 0 to 1, used in easing calculation
@@ -262,10 +253,11 @@ const spin = (
       (currentTime - startTime) / (endTime - startTime),
       1
     );
-    const easing = 1 - Math.pow(1 - progress, 3); // Apply cubic easing
-    currentAngle = spinAngleStart + easing * (Math.PI * 2 * spinTime.value);
 
-    // Clear the innerCanvas and redraw the wheel with the updated angle
+    // Applies cubic easing
+    const easing = 1 - Math.pow(1 - progress, 3);
+
+    currentAngle = spinAngleStart + easing * (Math.PI * 2 * spinTime.value);
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     // Render rotated wheel with the new angle, passes innerCtx and innerCavas
@@ -285,6 +277,7 @@ const spin = (
 <template>
   <div class="flex items-center justify-center" @click="animateSpin">
     <canvas width="500" height="500" ref="innerCanvas"></canvas>
+
     <!-- 2nd canvas to render static parts, helps with performance on retina screens,
          shadows are way too expensive to render inside animation -->
     <canvas
