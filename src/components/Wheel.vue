@@ -79,18 +79,22 @@ const resizeCanvas = (): void => {
   innerCtx.value.scale(dpr, dpr);
   outerCtx.value.scale(dpr, dpr);
 
-  drawInnerWheel(0);
+  drawInnerWheel(0, innerCtx.value, innerCanvas.value);
   drawOuterWheel(outerCtx.value, outerCanvas.value);
 };
 
-// Draws the actual wheel
-const drawInnerWheel = (currentAngle: number): void => {
-  if (!innerCtx.value || !innerCanvas.value) {
+// Draws the actual wheel with arcs and entries
+const drawInnerWheel = (
+  currentAngle: number,
+  ctx: CanvasRenderingContext2D,
+  canvas: HTMLCanvasElement
+): void => {
+  if (!ctx || !canvas) {
     return;
   }
 
   // Set the wheel parameters
-  const realCanvasWidth = innerCanvas.value.width / dpr;
+  const realCanvasWidth = canvas.width / dpr;
   const radius = realCanvasWidth / 2.1;
   const centerX = realCanvasWidth / 2;
   const centerY = realCanvasWidth / 2;
@@ -152,31 +156,31 @@ const drawInnerWheel = (currentAngle: number): void => {
     );
 
     // Draw the arc
-    innerCtx.value.beginPath();
-    innerCtx.value.moveTo(centerX, centerY);
-    innerCtx.value.arc(centerX, centerY, radius, startAngle, endAngle);
-    innerCtx.value.closePath();
-    innerCtx.value.fillStyle = color;
+    ctx.beginPath();
+    ctx.moveTo(centerX, centerY);
+    ctx.arc(centerX, centerY, radius, startAngle, endAngle);
+    ctx.closePath();
+    ctx.fillStyle = color;
 
     // Fill in the arcs
-    innerCtx.value.fill();
+    ctx.fill();
 
     // Save the context state
-    innerCtx.value.save();
+    ctx.save();
 
     // Rotate the context to center the text on the arc
     let midAngle = (startAngle + endAngle) / 2;
-    innerCtx.value.translate(centerX, centerY);
-    innerCtx.value.rotate(midAngle);
+    ctx.translate(centerX, centerY);
+    ctx.rotate(midAngle);
 
     // Draw the entry name
-    innerCtx.value.font = `${fontSize}px Arial`;
-    innerCtx.value.fillStyle = "#FFFFFF";
-    innerCtx.value.textAlign = "center";
-    innerCtx.value.textBaseline = "middle";
-    innerCtx.value.fillText(entryName, textRadius, 0);
+    ctx.font = `${fontSize}px Arial`;
+    ctx.fillStyle = "#FFFFFF";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+    ctx.fillText(entryName, textRadius, 0);
     // Restore the context state
-    innerCtx.value.restore();
+    ctx.restore();
   }
 };
 
@@ -260,7 +264,7 @@ const spin = (): void => {
       innerCanvas.value.height
     );
     // Render rotated wheel with the new angle
-    drawInnerWheel(currentAngle);
+    drawInnerWheel(currentAngle, innerCtx.value, innerCanvas.value);
 
     // Continue the animation if the end time has not been reached
     if (currentTime < endTime) {
