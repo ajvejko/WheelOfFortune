@@ -230,8 +230,17 @@ const drawOuterWheel = (
   ctx.restore();
 };
 
+const animateSpin = () => {
+  if (!innerCtx.value || !innerCanvas.value) {
+    return;
+  }
+  spin(innerCtx.value, innerCanvas.value);
+};
 // Function that spins the wheel
-const spin = (): void => {
+const spin = (
+  ctx: CanvasRenderingContext2D,
+  canvas: HTMLCanvasElement
+): void => {
   const startTime = Date.now();
   const endTime = startTime + spinTime.value * 1000;
   const spinAngleStart = Math.floor(Math.random() * 180); // Random starting angle
@@ -241,7 +250,7 @@ const spin = (): void => {
   // Animation function to update the wheel during spinning
   const animate = () => {
     // Type narrowing
-    if (!innerCtx.value || !innerCanvas.value) {
+    if (!ctx || !canvas) {
       return;
     }
 
@@ -257,14 +266,10 @@ const spin = (): void => {
     currentAngle = spinAngleStart + easing * (Math.PI * 2 * spinTime.value);
 
     // Clear the innerCanvas and redraw the wheel with the updated angle
-    innerCtx.value.clearRect(
-      0,
-      0,
-      innerCanvas.value.width,
-      innerCanvas.value.height
-    );
-    // Render rotated wheel with the new angle
-    drawInnerWheel(currentAngle, innerCtx.value, innerCanvas.value);
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Render rotated wheel with the new angle, passes innerCtx and innerCavas
+    drawInnerWheel(currentAngle, ctx, canvas);
 
     // Continue the animation if the end time has not been reached
     if (currentTime < endTime) {
@@ -278,7 +283,7 @@ const spin = (): void => {
 </script>
 
 <template>
-  <div class="flex items-center justify-center" @click="spin">
+  <div class="flex items-center justify-center" @click="animateSpin">
     <canvas width="500" height="500" ref="innerCanvas"></canvas>
     <!-- 2nd canvas to render static parts, helps with performance on retina screens,
          shadows are way too expensive to render inside animation -->
