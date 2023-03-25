@@ -10,6 +10,16 @@ export let entryNames = reactive([
   "Entry 6",
 ]);
 
+export let entryResult = reactive([
+  //List of results
+  "Entry1",
+  "Entry2",
+  "Entry3",
+  "Entry4",
+  "Entry5",
+  "Entry6",
+])
+
 export const entryColors = [
   // List of colors that are used to generate the wheel
   "#16A34A", //Green

@@ -2,7 +2,7 @@
 import { onMounted, onUnmounted, ref, watch } from "vue";
 import { entryNames, entryColors } from "../Store/Entries";
 
-// Create references for the caanvas element and its 2D context
+// Create references for the canvas element and its 2D context
 const innerCanvas = ref<HTMLCanvasElement | null>(null);
 const outerCanvas = ref<HTMLCanvasElement | null>(null);
 const innerCtx = ref<CanvasRenderingContext2D | null>(null);
@@ -230,6 +230,18 @@ const animateSpin = () => {
   spinWheel(innerCtx.value, innerCanvas.value);
 };
 
+const getWinner = (currentAngle: number): number => {
+  const numEntries = entryNames.length;
+  const anglePerEntry = (2 * Math.PI) / numEntries;
+
+  // Normalize the angle by taking the modulus with 2 * PI (full circle)
+  const normalizedAngle = currentAngle % (2 * Math.PI);
+
+  // Calculate the winner by taking the floor of the normalized angle divided by the angle per entry
+  const winner = -Math.floor(normalizedAngle / anglePerEntry - numEntries + 1);
+  return winner;
+};
+
 const spinWheel = (
   ctx: CanvasRenderingContext2D,
   canvas: HTMLCanvasElement
@@ -256,8 +268,8 @@ const spinWheel = (
 
     // Applies cubic easing
     const easing = 1 - Math.pow(1 - progress, 3);
-
     currentAngle = spinAngleStart + easing * (Math.PI * 2 * spinTime.value);
+
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
     // Render rotated wheel with the new angle, passes innerCtx and innerCavas
@@ -266,6 +278,10 @@ const spinWheel = (
     // Continue the animation if the end time has not been reached
     if (currentTime < endTime) {
       requestAnimationFrame(animate);
+    } else {
+      // Get the winner and display the winning entry after the wheel stops spinning
+      const winnerIndex = getWinner(currentAngle);
+      console.log(`The winner is: ${entryNames[winnerIndex]}`);
     }
   };
 
