@@ -9,8 +9,10 @@ const outerCanvas = ref<HTMLCanvasElement | null>(null);
 const innerCtx = ref<CanvasRenderingContext2D | null>(null);
 const outerCtx = ref<CanvasRenderingContext2D | null>(null);
 const dpr = window.devicePixelRatio || 1;
-const spinTime = ref(24); // Spin time in seconds
 const showWinner = ref(false);
+const spinTime = ref(30); // Spin time in seconds
+let isSpinning = false;
+let spinAngle = 0;
 
 // Function to get the 2D context from a canvas element
 const get2DContext = (
@@ -226,7 +228,7 @@ const drawOuterWheel = (
 };
 
 const animateSpin = () => {
-  if (!innerCtx.value || !innerCanvas.value) {
+  if (!innerCtx.value || !innerCanvas.value || isSpinning) {
     return;
   }
   spinWheel(innerCtx.value, innerCanvas.value);
@@ -251,8 +253,18 @@ const spinWheel = (
 ): void => {
   const startTime = Date.now();
   const endTime = startTime + spinTime.value * 1000;
-  const spinAngle = Math.floor(Math.random() * 360);
+  const animationFactor = Math.min(spinTime.value / 5, 1);
   let currentTime = startTime;
+  let randomized = false;
+
+  isSpinning = true;
+
+  const customEaseInOutCubic = (progress: number, factor: number): number => {
+    const p = progress < 0.5 ? 1.8 * progress : 1.8 * (progress - 1);
+    const cubic = p * p * p;
+
+    return progress < 0.5 ? factor * cubic : 1 + factor * cubic;
+  };
 
   // Animation function to update the wheel with updated values
   const animate = () => {
@@ -262,13 +274,17 @@ const spinWheel = (
 
     currentTime = Date.now();
 
-    //calculate progress 0 to 1, used in easing calculation
+    // Calculate progress 0 to 1, used in easing calculation
     const progress = Math.min(
       (currentTime - startTime) / (endTime - startTime),
       1
     );
-
-    const easing = 1 - Math.pow(1 - progress, 3);
+    if (progress >= 0.5 && !randomized) {
+      spinAngle = Math.floor(Math.random() * 360);
+      randomized = true;
+    }
+    // Applies easeOutCubic easing
+    const easing = customEaseInOutCubic(progress, animationFactor);
     const currentAngle = spinAngle + easing * (Math.PI * 2 * spinTime.value);
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -304,6 +320,7 @@ const removeEntry = (): void => {
 };
 
 const handleClose = (): void => {
+  isSpinning = false;
   showWinner.value = false;
 };
 </script>
