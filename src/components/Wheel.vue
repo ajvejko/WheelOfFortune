@@ -9,9 +9,8 @@ const outerCanvas = ref<HTMLCanvasElement | null>(null);
 const innerCtx = ref<CanvasRenderingContext2D | null>(null);
 const outerCtx = ref<CanvasRenderingContext2D | null>(null);
 const dpr = window.devicePixelRatio || 1;
-const spinTime = ref(3); // Spin time in seconds
+const spinTime = ref(24); // Spin time in seconds
 const showWinner = ref(false);
-let spinAngle = 0;
 
 // Function to get the 2D context from a canvas element
 const get2DContext = (
@@ -252,12 +251,8 @@ const spinWheel = (
 ): void => {
   const startTime = Date.now();
   const endTime = startTime + spinTime.value * 1000;
+  const spinAngle = Math.floor(Math.random() * 360);
   let currentTime = startTime;
-  let randomized = false;
-
-  const easeInOut = (t: number) => {
-    return t < 0.5 ? 16 * t * t * t * t * t : 1 - Math.pow(-2 * t + 2, 5) / 2;
-  };
 
   // Animation function to update the wheel with updated values
   const animate = () => {
@@ -273,12 +268,7 @@ const spinWheel = (
       1
     );
 
-    // Applies easeInOut easing
-    const easing = easeInOut(progress);
-    if (progress >= 0.5 && !randomized) {
-      spinAngle = Math.floor(Math.random() * 180);
-      randomized = true;
-    }
+    const easing = 1 - Math.pow(1 - progress, 3);
     const currentAngle = spinAngle + easing * (Math.PI * 2 * spinTime.value);
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
