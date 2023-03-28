@@ -38,8 +38,7 @@ watchEffect(() => {
 <template>
   <div class="mx-6 mt-16 flex h-[60vh] flex-col">
     <div class="flex justify-evenly text-slate-100">
-      <span>Entries</span>
-      <span>Results</span>
+      <button>Entries</button>
     </div>
 
     <div class="mt-1 grow rounded-xl bg-[#1E1E1E] p-3">

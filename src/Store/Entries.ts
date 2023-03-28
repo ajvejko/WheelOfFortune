@@ -1,4 +1,6 @@
-import { reactive } from "vue";
+import { reactive, ref } from "vue";
+
+export let currentWinner = ref("");
 
 export let entryNames = reactive([
   //List of entries
@@ -9,16 +11,6 @@ export let entryNames = reactive([
   "Entry 5",
   "Entry 6",
 ]);
-
-export let entryResult = reactive([
-  //List of results
-  "Entry1",
-  "Entry2",
-  "Entry3",
-  "Entry4",
-  "Entry5",
-  "Entry6",
-])
 
 export const entryColors = [
   // List of colors that are used to generate the wheel

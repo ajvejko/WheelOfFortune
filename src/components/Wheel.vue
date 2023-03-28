@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref, watch } from "vue";
-import { entryNames, entryColors } from "../Store/Entries";
+import { entryNames, entryColors, currentWinner } from "../Store/Entries";
+import WinnerPanel from "./WinnerPanel.vue";
 
 // Create references for the canvas element and its 2D context
 const innerCanvas = ref<HTMLCanvasElement | null>(null);
@@ -8,7 +9,8 @@ const outerCanvas = ref<HTMLCanvasElement | null>(null);
 const innerCtx = ref<CanvasRenderingContext2D | null>(null);
 const outerCtx = ref<CanvasRenderingContext2D | null>(null);
 const dpr = window.devicePixelRatio || 1;
-const spinTime = ref(5); // Spin time in seconds
+const spinTime = ref(3); // Spin time in seconds
+const showWinner = ref(false);
 let spinAngle = 0;
 
 // Function to get the 2D context from a canvas element
@@ -231,7 +233,7 @@ const animateSpin = () => {
   spinWheel(innerCtx.value, innerCanvas.value);
 };
 
-const getWinner = (currentAngle: number): number => {
+const getWinner = (currentAngle: number): string => {
   const numEntries = entryNames.length;
   const anglePerEntry = (2 * Math.PI) / numEntries;
 
@@ -241,7 +243,7 @@ const getWinner = (currentAngle: number): number => {
   // Calculate the winner by taking the floor of the normalized angle divided by the angle per entry
   const winner = -Math.floor(normalizedAngle / anglePerEntry - numEntries + 1);
 
-  return winner;
+  return entryNames[winner];
 };
 
 const spinWheel = (
@@ -289,13 +291,30 @@ const spinWheel = (
       requestAnimationFrame(animate);
     } else {
       // Get the winner and display the winning entry after the wheel stops spinning
-      const winnerIndex = getWinner(currentAngle);
-      console.log(`The winner is: ${entryNames[winnerIndex]}`);
+      currentWinner.value = getWinner(currentAngle);
+      showWinner.value = true;
     }
   };
 
   // Start the animation
   requestAnimationFrame(animate);
+};
+
+const removeEntry = (): void => {
+  // Remove the current winner from the array
+  const updatedArray = entryNames.filter(
+    (entry) => entry !== currentWinner.value
+  );
+
+  // Clear the array and push the updated array
+  entryNames.length = 0;
+  entryNames.push(...updatedArray);
+
+  handleClose();
+};
+
+const handleClose = (): void => {
+  showWinner.value = false;
 };
 </script>
 
@@ -312,4 +331,11 @@ const spinWheel = (
       ref="outerCanvas"
     ></canvas>
   </div>
+  <WinnerPanel
+    v-if="showWinner"
+    @remove-entry="removeEntry"
+    @close="handleClose"
+  >
+    {{ currentWinner }}
+  </WinnerPanel>
 </template>
