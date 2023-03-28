@@ -3,7 +3,7 @@
   <nav
     class="fixed top-0 left-0 right-0 flex items-center justify-between bg-bgCustom px-8 py-3 shadow-xl shadow-bgCustom"
   >
-    <a id="home" class="text-lg font-bold text-slate-100">Wheel Of Fortune</a>
+    <a id="home" class="text-lg font-bold text-slate-100">Spin The Wheel</a>
     <button>
       <svg
         xmlns="http://www.w3.org/2000/svg"
