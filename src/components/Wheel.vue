@@ -10,7 +10,7 @@ const innerCtx = ref<CanvasRenderingContext2D | null>(null);
 const outerCtx = ref<CanvasRenderingContext2D | null>(null);
 const dpr = window.devicePixelRatio || 1;
 const showWinner = ref(false);
-const spinTime = ref(30); // Spin time in seconds
+const spinTime = ref(5); // Spin time in seconds
 let isSpinning = false;
 let spinAngle = 0;
 
@@ -263,7 +263,7 @@ const spinWheel = (
     const p = progress < 0.5 ? 1.8 * progress : 1.8 * (progress - 1);
     const cubic = p * p * p;
 
-    return progress < 0.5 ? factor * cubic : 1 + factor * cubic;
+    return factor * cubic;
   };
 
   // Animation function to update the wheel with updated values
