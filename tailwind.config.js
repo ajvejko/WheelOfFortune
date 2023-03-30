@@ -8,7 +8,7 @@ module.exports = {
         inter: "'Inter', serif",
       },
       colors: {
-        bgCustom: "#141314",
+        bgCustom: "#0F1011",
       },
     },
   },
