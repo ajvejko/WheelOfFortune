@@ -2,12 +2,13 @@
 import { ref } from "vue";
 
 const show = ref(false);
+const customizeWindow = ref(false);
 </script>
 <template>
-  <nav
-    class="fixed top-0 left-0 right-0 z-10 bg-bgCustom px-8 py-3 shadow-xl shadow-bgCustom"
-  >
-    <div class="flex items-center justify-between">
+  <nav class="fixed right-0 top-0 left-0 z-10 px-8">
+    <div
+      class="flex items-center justify-between bg-bgCustom py-3 shadow-xl shadow-bgCustom"
+    >
       <a id="home" class="text-lg font-bold text-slate-100">Spin The Wheel</a>
       <button @click="show = !show">
         <svg
@@ -27,7 +28,10 @@ const show = ref(false);
       </button>
     </div>
     <Transition name="fade">
-      <div v-if="show" class="z-10 flex flex-col bg-bgCustom py-3 text-right">
+      <div
+        v-if="show"
+        class="z-10 flex flex-col bg-bgCustom/95 py-3 text-right shadow-xl shadow-bgCustom"
+      >
         <a id="Customize" href="#" class="font-bold text-neutral-300">
           Customize
         </a>

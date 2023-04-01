@@ -10,7 +10,7 @@ const innerCtx = ref<CanvasRenderingContext2D | null>(null);
 const outerCtx = ref<CanvasRenderingContext2D | null>(null);
 const dpr = window.devicePixelRatio || 1;
 const showWinner = ref(false);
-const spinTime = ref(10); // Spin time in seconds
+const spinTime = ref(5); // Spin time in seconds
 let isSpinning = false;
 let spinAngle = 0;
 
