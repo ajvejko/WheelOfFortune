@@ -21,3 +21,5 @@ export const entryColors = [
   "#DC2626", //Red
   "#FACC15", //Yellow
 ];
+
+export const spinTime = ref(10); // Time in seconds for the wheel to spin

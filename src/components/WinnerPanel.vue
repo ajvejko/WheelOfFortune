@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import { entryNames, currentWinner } from "../Store/Entries";
-
 defineEmits(["remove-entry", "close"]);
 </script>
 

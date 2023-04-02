@@ -1,6 +1,11 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref, watch } from "vue";
-import { entryNames, entryColors, currentWinner } from "../Store/Entries";
+import {
+  entryNames,
+  entryColors,
+  currentWinner,
+  spinTime,
+} from "../Store/WheelConfig";
 import WinnerPanel from "./WinnerPanel.vue";
 
 // Create references for the canvas element and its 2D context
@@ -10,7 +15,6 @@ const innerCtx = ref<CanvasRenderingContext2D | null>(null);
 const outerCtx = ref<CanvasRenderingContext2D | null>(null);
 const dpr = window.devicePixelRatio || 1;
 const showWinner = ref(false);
-const spinTime = ref(5); // Spin time in seconds
 let isSpinning = false;
 let spinAngle = 0;
 
