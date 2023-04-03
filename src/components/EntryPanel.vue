@@ -36,7 +36,7 @@ watchEffect(() => {
 });
 </script>
 <template>
-  <div class="mx-6 mt-16 flex h-[60vh] flex-col">
+  <div class="mx-6 mt-16 flex h-[60vh] flex-col sm:mt-0">
     <div class="flex justify-evenly text-slate-100">
       <button>Entries</button>
     </div>

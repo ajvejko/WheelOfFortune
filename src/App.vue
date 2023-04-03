@@ -2,16 +2,16 @@
 import Navbar from "./components/Navbar.vue";
 import Wheel from "./components/Wheel.vue";
 import EntryPanel from "./components/EntryPanel.vue";
-import CustomizeWindow from "./components/CustomizeWindow.vue";
 </script>
 
 <template>
   <section class="relative h-screen w-screen bg-bgCustom">
     <Navbar />
-    <div class="pt-20">
+    <div class="relative mt-20 justify-center lg:flex">
       <Wheel />
-      <EntryPanel />
-      <CustomizeWindow />
+      <div class="right-0 top-0 lg:absolute">
+        <EntryPanel />
+      </div>
     </div>
   </section>
 </template>
