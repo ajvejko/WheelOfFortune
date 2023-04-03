@@ -1,8 +1,13 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import CustomizeWindow from "./CustomizeWindow.vue";
 
 const show = ref(false);
 const customizeWindow = ref(false);
+
+const close = (): void => {
+  customizeWindow.value = false;
+};
 </script>
 <template>
   <nav class="fixed right-0 top-0 left-0 z-10 px-8">
@@ -32,7 +37,15 @@ const customizeWindow = ref(false);
         v-if="show"
         class="z-10 flex flex-col bg-bgCustom/95 py-3 text-right shadow-xl shadow-bgCustom"
       >
-        <a id="Customize" href="#" class="font-bold text-neutral-300">
+        <a
+          id="Customize"
+          href="#"
+          @click="
+            show = false;
+            customizeWindow = true;
+          "
+          class="font-bold text-neutral-300"
+        >
           Customize
         </a>
         <a id="Save" href="#" class="mt-2 font-bold text-neutral-300">Save</a>
@@ -40,6 +53,9 @@ const customizeWindow = ref(false);
       </div>
     </Transition>
   </nav>
+  <Transition name="fade">
+    <CustomizeWindow v-if="customizeWindow" @close="customizeWindow = false" />
+  </Transition>
 </template>
 
 <style>
