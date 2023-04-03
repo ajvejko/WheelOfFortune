@@ -22,4 +22,4 @@ export const entryColors = [
   "#FACC15", //Yellow
 ];
 
-export const spinTime = ref(10); // Time in seconds for the wheel to spin
+export const spinTime = ref(15); // Time in seconds for the wheel to spin
