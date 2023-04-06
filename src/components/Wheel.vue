@@ -235,7 +235,7 @@ const animateSpin = () => {
   if (!innerCtx.value || !innerCanvas.value || isSpinning) {
     return;
   }
-  spinWheel(innerCtx.value, innerCanvas.value);
+  spinWheel(innerCtx.value, innerCanvas.value, spinTime.value);
 };
 
 const getWinner = (currentAngle: number): string => {
@@ -253,11 +253,12 @@ const getWinner = (currentAngle: number): string => {
 
 const spinWheel = (
   ctx: CanvasRenderingContext2D,
-  canvas: HTMLCanvasElement
+  canvas: HTMLCanvasElement,
+  spinTime: number
 ): void => {
   const startTime = Date.now();
-  const endTime = startTime + spinTime.value * 1000;
-  const animationFactor = Math.min(spinTime.value / 5, 1);
+  const endTime = startTime + spinTime * 1000;
+  const animationFactor = Math.min(spinTime / 5, 1);
   let currentTime = startTime;
   let randomized = false;
 
@@ -289,7 +290,7 @@ const spinWheel = (
     }
     // Applies easeOutCubic easing
     const easing = customEaseInOutCubic(progress, animationFactor);
-    const currentAngle = spinAngle + easing * (Math.PI * 2 * spinTime.value);
+    const currentAngle = spinAngle + easing * (Math.PI * 2 * spinTime);
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
 
