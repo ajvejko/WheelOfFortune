@@ -46,7 +46,7 @@ const close = (): void => {
           "
           class="font-bold text-neutral-300"
         >
-          Customize
+          Settings
         </a>
         <a id="Save" href="#" class="mt-2 font-bold text-neutral-300">Save</a>
         <a id="Open" href="#" class="mt-2 font-bold text-neutral-300">Open</a>

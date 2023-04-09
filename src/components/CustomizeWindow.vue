@@ -11,10 +11,10 @@ defineEmits(["close"]);
       class="relative flex h-fit justify-center rounded-xl border-2 bg-bgCustom px-4 py-4 text-slate-100"
     >
       <div>
-        <div class="text-center font-roboto text-3xl">Customize</div>
-        <div>
-          <h2 class="mt-3 text-lg font-light">Spin time ({{ spinTime }}s):</h2>
+        <h1 class="text-center font-roboto text-3xl">Customize</h1>
 
+        <div class="pb-3">
+          <h2 class="mt-3 text-lg font-light">Spin time ({{ spinTime }}s):</h2>
           <input
             v-model="spinTime"
             type="range"
@@ -26,7 +26,7 @@ defineEmits(["close"]);
         </div>
         <button
           @click="$emit('close')"
-          class="rounded-md mt-3 border-2 py-1 px-2 text-slate-100 shadow-[0_0px_8px_rgba(0,0,0,0.25)] active:shadow-slate-100"
+          class="mt-3 rounded-md border-2 py-1 px-2 text-slate-100 shadow-[0_0px_8px_rgba(0,0,0,0.25)] active:shadow-slate-100"
         >
           Close
         </button>
