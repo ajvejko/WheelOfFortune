@@ -17,6 +17,10 @@ import EntryPanel from "./components/EntryPanel.vue";
 </template>
 
 <style>
+body {
+  overflow-x: hidden;
+}
+
 .button-transition {
   transition: all ease 300ms;
 }
