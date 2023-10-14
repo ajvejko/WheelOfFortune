@@ -5,7 +5,7 @@ defineEmits(["closeModal"]);
 </script>
 <template>
   <div
-    class="relative flex flex-col justify-center rounded-xl border bg-bgCustom px-4 py-4 text-slate-100"
+    class="relative flex w-3/4 max-w-sm flex-col justify-center rounded-xl border bg-bgCustom px-4 py-4 text-slate-100 md:py-6 md:px-6"
   >
     <button
       @click="$emit('closeModal')"
@@ -26,14 +26,16 @@ defineEmits(["closeModal"]);
       </svg>
     </button>
     <div>
-      <h2 class="text-lg font-light">Spin time ({{ spinTime }}s):</h2>
+      <h2 class="text-lg font-light sm:text-xl md:text-2xl">
+        Spin time ({{ spinTime }}s):
+      </h2>
       <input
         v-model="spinTime"
         type="range"
         min="5"
         max="70"
         steps="1"
-        class="range h-1.5 appearance-none rounded-full bg-neutral-800 hover:bg-neutral-700"
+        class="range h-1.5 w-full appearance-none rounded-full bg-neutral-800 hover:bg-neutral-700"
       />
     </div>
   </div>
