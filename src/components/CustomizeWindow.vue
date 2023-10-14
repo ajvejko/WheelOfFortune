@@ -5,28 +5,36 @@ defineEmits(["closeModal"]);
 </script>
 <template>
   <div
-    class="relative flex h-fit justify-center rounded-xl border-2 bg-bgCustom px-4 py-4 text-slate-100"
+    class="relative flex flex-col justify-center rounded-xl border bg-bgCustom px-4 py-4 text-slate-100"
   >
-    <div>
-      <h1 class="text-center font-roboto text-3xl">Customize</h1>
-
-      <div class="pb-3">
-        <h2 class="mt-3 text-lg font-light">Spin time ({{ spinTime }}s):</h2>
-        <input
-          v-model="spinTime"
-          type="range"
-          min="5"
-          max="70"
-          steps="1"
-          class="range h-1.5 appearance-none rounded-full bg-neutral-800 hover:bg-neutral-700"
-        />
-      </div>
-      <button
-        @click="$emit('closeModal')"
-        class="mt-3 rounded-md border-2 py-1 px-2 text-slate-100 shadow-[0_0px_8px_rgba(0,0,0,0.25)] active:shadow-slate-100"
+    <button
+      @click="$emit('closeModal')"
+      class="button-transition absolute right-0 top-0 translate-x-[40%] translate-y-[-40%] rounded-lg border border-white bg-bgCustom shadow-black hover:scale-110 hover:border-2 active:border-rose-600"
+    >
+      <!-- X icon -->
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        class="h-6 w-6 stroke-slate-100 md:h-8 md:w-8 lg:h-9 lg:w-9"
       >
-        Close
-      </button>
+        <line x1="18" y1="6" x2="6" y2="18"></line>
+        <line x1="6" y1="6" x2="18" y2="18"></line>
+      </svg>
+    </button>
+    <div>
+      <h2 class="text-lg font-light">Spin time ({{ spinTime }}s):</h2>
+      <input
+        v-model="spinTime"
+        type="range"
+        min="5"
+        max="70"
+        steps="1"
+        class="range h-1.5 appearance-none rounded-full bg-neutral-800 hover:bg-neutral-700"
+      />
     </div>
   </div>
 </template>

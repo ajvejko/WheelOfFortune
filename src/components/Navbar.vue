@@ -5,6 +5,7 @@ import CustomizeWindow from "./CustomizeWindow.vue";
 import BaseModal from "./BaseModal.vue";
 
 const customizeWindow = ref(false);
+const customizationWindow = ref(null);
 
 const openModal = (): void => {
   customizeWindow.value = true;
@@ -13,6 +14,7 @@ const openModal = (): void => {
 const closeModal = (): void => {
   customizeWindow.value = false;
 };
+onClickOutside(customizationWindow, closeModal);
 </script>
 <template>
   <nav class="fixed right-0 top-0 left-0 z-10 px-8">
@@ -28,6 +30,7 @@ const closeModal = (): void => {
       <Transition name="bounce">
         <CustomizeWindow
           v-if="customizeWindow"
+          ref="customizationWindow"
           @closeModal="customizeWindow = false"
         />
       </Transition>

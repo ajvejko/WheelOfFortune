@@ -17,6 +17,10 @@ import EntryPanel from "./components/EntryPanel.vue";
 </template>
 
 <style>
+.button-transition {
+  transition: all ease 300ms;
+}
+
 .bounce-enter-from,
 .bounce-leave-to {
   scale: 0;
