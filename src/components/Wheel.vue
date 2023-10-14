@@ -63,9 +63,9 @@ const resizeCanvas = (): void => {
     if (window.innerWidth >= 640 && window.innerWidth < 1024) {
       return 2;
     } else if (window.innerWidth >= 1024) {
-      return 3.5;
+      return 2.5;
     }
-    return 1.6;
+    return 1.3;
   };
 
   let modifier = getWindowModifier();
@@ -331,7 +331,7 @@ const handleClose = (): void => {
 </script>
 
 <template>
-  <div class="flex items-center justify-center" @click="animateSpin">
+  <div class="relative flex items-center justify-center" @click="animateSpin">
     <canvas width="500" height="500" ref="innerCanvas"></canvas>
 
     <!-- 2nd canvas to render static parts, helps with performance on retina screens,
@@ -342,6 +342,9 @@ const handleClose = (): void => {
       class="absolute"
       ref="outerCanvas"
     ></canvas>
+    <span class="absolute top-1/4 text-lg font-bold text-black"
+      >Click to Spin!</span
+    >
   </div>
   <WinnerPanel
     v-if="showWinner"
