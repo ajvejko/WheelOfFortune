@@ -15,7 +15,7 @@ const innerCtx = ref<CanvasRenderingContext2D | null>(null);
 const outerCtx = ref<CanvasRenderingContext2D | null>(null);
 const dpr = window.devicePixelRatio || 1;
 const showWinner = ref(false);
-let isSpinning = false;
+let isSpinning = ref(false);
 let spinAngle = 0;
 
 // Function to get the 2D context from a canvas element
@@ -232,7 +232,7 @@ const drawOuterWheel = (
 };
 
 const animateSpin = () => {
-  if (!innerCtx.value || !innerCanvas.value || isSpinning) {
+  if (!innerCtx.value || !innerCanvas.value || isSpinning.value) {
     return;
   }
   spinWheel(innerCtx.value, innerCanvas.value, spinTime.value);
@@ -262,7 +262,7 @@ const spinWheel = (
   let currentTime = startTime;
   let randomized = false;
 
-  isSpinning = true;
+  isSpinning.value = true;
 
   const customEaseInOutCubic = (progress: number, factor: number): number => {
     const p = progress < 0.5 ? 1.8 * progress : 1.8 * (progress - 1);
@@ -325,13 +325,17 @@ const removeEntry = (): void => {
 };
 
 const handleClose = (): void => {
-  isSpinning = false;
+  isSpinning.value = false;
   showWinner.value = false;
 };
 </script>
 
 <template>
-  <div class="relative flex items-center justify-center" @click="animateSpin">
+  <div
+    class="relative flex items-center justify-center"
+    :class="isSpinning ? 'cursor-default' : 'cursor-pointer'"
+    @click="animateSpin"
+  >
     <canvas width="500" height="500" ref="innerCanvas"></canvas>
 
     <!-- 2nd canvas to render static parts, helps with performance on retina screens,
@@ -342,7 +346,9 @@ const handleClose = (): void => {
       class="absolute"
       ref="outerCanvas"
     ></canvas>
-    <span class="absolute top-1/4 text-lg font-bold text-black"
+    <span
+      v-if="!isSpinning"
+      class="wheel_title absolute top-1/4 select-none text-2xl font-bold text-white"
       >Click to Spin!</span
     >
   </div>
@@ -354,3 +360,8 @@ const handleClose = (): void => {
     {{ currentWinner }}
   </WinnerPanel>
 </template>
+<style scoped>
+.wheel_title {
+  text-shadow: 0 0 15px #000;
+}
+</style>
