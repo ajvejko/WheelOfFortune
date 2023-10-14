@@ -21,8 +21,17 @@ onClickOutside(customizationWindow, closeModal);
     <div
       class="flex items-center justify-between bg-bgCustom py-3 shadow-xl shadow-bgCustom"
     >
-      <a id="home" class="text-lg font-bold text-slate-100">Spin The Wheel</a>
-      <button class="text-slate-100" @click="openModal">Spin time</button>
+      <a
+        id="#home"
+        class="button-transition select-none text-lg font-bold text-slate-100 hover:scale-105 hover:cursor-pointer sm:text-xl lg:text-2xl xl:text-3xl"
+        >Spin The Wheel</a
+      >
+      <button
+        class="button-transition text-slate-100 hover:scale-110 sm:text-lg lg:text-xl xl:text-2xl"
+        @click="openModal"
+      >
+        Spin time
+      </button>
     </div>
   </nav>
   <Transition name="fade">
