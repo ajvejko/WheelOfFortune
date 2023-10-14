@@ -1,36 +1,32 @@
 <script setup lang="ts">
 import { spinTime } from "../Store/WheelConfig";
 
-defineEmits(["close"]);
+defineEmits(["closeModal"]);
 </script>
 <template>
   <div
-    class="absolute top-0 z-20 flex h-screen w-screen items-center justify-center bg-black/50"
+    class="relative flex h-fit justify-center rounded-xl border-2 bg-bgCustom px-4 py-4 text-slate-100"
   >
-    <div
-      class="relative flex h-fit justify-center rounded-xl border-2 bg-bgCustom px-4 py-4 text-slate-100"
-    >
-      <div>
-        <h1 class="text-center font-roboto text-3xl">Customize</h1>
+    <div>
+      <h1 class="text-center font-roboto text-3xl">Customize</h1>
 
-        <div class="pb-3">
-          <h2 class="mt-3 text-lg font-light">Spin time ({{ spinTime }}s):</h2>
-          <input
-            v-model="spinTime"
-            type="range"
-            min="5"
-            max="70"
-            steps="1"
-            class="range h-1.5 appearance-none rounded-full bg-neutral-800 hover:bg-neutral-700"
-          />
-        </div>
-        <button
-          @click="$emit('close')"
-          class="mt-3 rounded-md border-2 py-1 px-2 text-slate-100 shadow-[0_0px_8px_rgba(0,0,0,0.25)] active:shadow-slate-100"
-        >
-          Close
-        </button>
+      <div class="pb-3">
+        <h2 class="mt-3 text-lg font-light">Spin time ({{ spinTime }}s):</h2>
+        <input
+          v-model="spinTime"
+          type="range"
+          min="5"
+          max="70"
+          steps="1"
+          class="range h-1.5 appearance-none rounded-full bg-neutral-800 hover:bg-neutral-700"
+        />
       </div>
+      <button
+        @click="$emit('closeModal')"
+        class="mt-3 rounded-md border-2 py-1 px-2 text-slate-100 shadow-[0_0px_8px_rgba(0,0,0,0.25)] active:shadow-slate-100"
+      >
+        Close
+      </button>
     </div>
   </div>
 </template>

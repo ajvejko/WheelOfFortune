@@ -15,3 +15,25 @@ import EntryPanel from "./components/EntryPanel.vue";
     </div>
   </section>
 </template>
+
+<style>
+.bounce-enter-from,
+.bounce-leave-to {
+  scale: 0;
+}
+
+.bounce-enter-active,
+.bounce-leave-active {
+  transition: all 0.5s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
+}
+
+.fade-enter-active,
+.fade-leave-active {
+  transition: all 0.2s ease;
+}
+</style>
