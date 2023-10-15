@@ -7,6 +7,7 @@ import {
   spinTime,
 } from "../Store/WheelConfig";
 import WinnerPanel from "./WinnerPanel.vue";
+import BaseModal from "./BaseModal.vue";
 
 // Create references for the canvas element and its 2D context
 const innerCanvas = ref<HTMLCanvasElement | null>(null);
@@ -349,13 +350,19 @@ const handleClose = (): void => {
       >Click to Spin!</span
     >
   </div>
-  <WinnerPanel
-    v-if="showWinner"
-    @remove-entry="removeEntry"
-    @close="handleClose"
-  >
-    {{ currentWinner }}
-  </WinnerPanel>
+  <Transition name="fade">
+    <BaseModal v-show="showWinner">
+      <Transition name="bounce">
+        <WinnerPanel
+          v-if="showWinner"
+          @remove-entry="removeEntry"
+          @close="handleClose"
+        >
+          {{ currentWinner }}
+        </WinnerPanel>
+      </Transition>
+    </BaseModal>
+  </Transition>
 </template>
 <style scoped>
 .wheel_title {
