@@ -264,11 +264,8 @@ const spinWheel = (
 
   isSpinning.value = true;
 
-  const customEaseInOutCubic = (progress: number, factor: number): number => {
-    const p = progress < 0.5 ? 1.8 * progress : 1.8 * (progress - 1);
-    const cubic = p * p * p;
-
-    return factor * cubic;
+  const easeOutCirc = (progress: number, factor: number): number => {
+    return Math.sqrt(1 - Math.pow(progress - 1, 2)) * factor;
   };
 
   // Animation function to update the wheel with updated values
@@ -284,12 +281,12 @@ const spinWheel = (
       (currentTime - startTime) / (endTime - startTime),
       1
     );
-    if (progress >= 0.5 && !randomized) {
+    if (progress >= 0.03 && !randomized) {
       spinAngle = Math.floor(Math.random() * 360);
       randomized = true;
     }
-    // Applies easeOutCubic easing
-    const easing = customEaseInOutCubic(progress, animationFactor);
+    // Applies easeOutCirc easing
+    const easing = easeOutCirc(progress, animationFactor);
     const currentAngle = spinAngle + easing * (Math.PI * 2 * spinTime);
 
     ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -331,34 +328,34 @@ const handleClose = (): void => {
 </script>
 
 <template>
-    <div
-      class="relative flex items-center justify-center"
-      :class="isSpinning ? 'cursor-default' : 'cursor-pointer'"
-      @click="animateSpin"
-    >
-      <canvas width="500" height="500" ref="innerCanvas"></canvas>
+  <div
+    class="relative flex items-center justify-center"
+    :class="isSpinning ? 'cursor-default' : 'cursor-pointer'"
+    @click="animateSpin"
+  >
+    <canvas width="500" height="500" ref="innerCanvas"></canvas>
 
-      <!-- 2nd canvas to render static parts, helps with performance on retina screens,
+    <!-- 2nd canvas to render static parts, helps with performance on retina screens,
          shadows are way too expensive to render inside animation -->
-      <canvas
-        width="500"
-        height="500"
-        class="absolute"
-        ref="outerCanvas"
-      ></canvas>
-      <span
-        v-if="!isSpinning"
-        class="wheel_title absolute top-1/3 select-none text-2xl font-bold text-white md:text-3xl 2xl:text-4xl"
-        >Click to Spin!</span
-      >
-    </div>
-    <WinnerPanel
-      v-if="showWinner"
-      @remove-entry="removeEntry"
-      @close="handleClose"
+    <canvas
+      width="500"
+      height="500"
+      class="absolute"
+      ref="outerCanvas"
+    ></canvas>
+    <span
+      v-if="!isSpinning"
+      class="wheel_title absolute top-1/3 select-none text-2xl font-bold text-white md:text-3xl 2xl:text-4xl"
+      >Click to Spin!</span
     >
-      {{ currentWinner }}
-    </WinnerPanel>
+  </div>
+  <WinnerPanel
+    v-if="showWinner"
+    @remove-entry="removeEntry"
+    @close="handleClose"
+  >
+    {{ currentWinner }}
+  </WinnerPanel>
 </template>
 <style scoped>
 .wheel_title {
