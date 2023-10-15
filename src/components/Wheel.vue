@@ -331,34 +331,34 @@ const handleClose = (): void => {
 </script>
 
 <template>
-  <div
-    class="relative flex items-center justify-center"
-    :class="isSpinning ? 'cursor-default' : 'cursor-pointer'"
-    @click="animateSpin"
-  >
-    <canvas width="500" height="500" ref="innerCanvas"></canvas>
-
-    <!-- 2nd canvas to render static parts, helps with performance on retina screens,
-         shadows are way too expensive to render inside animation -->
-    <canvas
-      width="500"
-      height="500"
-      class="absolute"
-      ref="outerCanvas"
-    ></canvas>
-    <span
-      v-if="!isSpinning"
-      class="wheel_title absolute top-1/3 select-none text-2xl font-bold text-white md:text-3xl 2xl:text-4xl"
-      >Click to Spin!</span
+    <div
+      class="relative flex items-center justify-center"
+      :class="isSpinning ? 'cursor-default' : 'cursor-pointer'"
+      @click="animateSpin"
     >
-  </div>
-  <WinnerPanel
-    v-if="showWinner"
-    @remove-entry="removeEntry"
-    @close="handleClose"
-  >
-    {{ currentWinner }}
-  </WinnerPanel>
+      <canvas width="500" height="500" ref="innerCanvas"></canvas>
+
+      <!-- 2nd canvas to render static parts, helps with performance on retina screens,
+         shadows are way too expensive to render inside animation -->
+      <canvas
+        width="500"
+        height="500"
+        class="absolute"
+        ref="outerCanvas"
+      ></canvas>
+      <span
+        v-if="!isSpinning"
+        class="wheel_title absolute top-1/3 select-none text-2xl font-bold text-white md:text-3xl 2xl:text-4xl"
+        >Click to Spin!</span
+      >
+    </div>
+    <WinnerPanel
+      v-if="showWinner"
+      @remove-entry="removeEntry"
+      @close="handleClose"
+    >
+      {{ currentWinner }}
+    </WinnerPanel>
 </template>
 <style scoped>
 .wheel_title {

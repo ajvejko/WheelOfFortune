@@ -7,9 +7,11 @@ import EntryPanel from "./components/EntryPanel.vue";
 <template>
   <section class="relative h-screen w-screen bg-bgCustom">
     <Navbar />
-    <div class="relative mt-20 justify-center lg:flex">
+    <div class="relative mt-20 justify-around lg:flex">
       <Wheel />
-      <div class="right-0 top-0 lg:absolute">
+      <div
+        class="lg:absolute lg:right-0 lg:top-1/2 lg:h-full lg:-translate-y-1/2"
+      >
         <EntryPanel />
       </div>
     </div>
