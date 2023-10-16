@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { entryNames } from "../Store/WheelConfig";
+import { entryNames } from "../stores/WheelConfig";
 import { ref, watchEffect } from "vue";
 
 const entries = ref("");

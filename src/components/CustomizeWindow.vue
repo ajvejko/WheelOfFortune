@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { spinTime } from "../Store/WheelConfig";
+import { spinTime } from "../stores/WheelConfig";
 
 defineEmits(["closeModal"]);
 </script>

@@ -5,7 +5,7 @@ import {
   entryColors,
   currentWinner,
   spinTime,
-} from "../Store/WheelConfig";
+} from "../stores/WheelConfig";
 import WinnerPanel from "./WinnerPanel.vue";
 import BaseModal from "./BaseModal.vue";
 
