@@ -48,7 +48,7 @@ watchEffect(() => {
         type="text"
         v-model="entries"
         placeholder="Entry 1, Entry 2; Entry3;&#10;Entry 4; Entry 5, Entry 6 &#10;&#10;Split your entries by using ',' or ';' &#10;or new line."
-        class="button-transition lg:h-full h-[60vh] w-full resize-none rounded-xl border border-slate-400 bg-transparent px-2 py-1 text-slate-100 hover:border-white focus:border-white focus:outline-none"
+        class="button-transition h-[60vh] w-full resize-none rounded-xl border border-slate-400 bg-transparent px-2 py-1 text-slate-100 hover:border-white focus:border-white focus:outline-none lg:h-full"
       >
       </textarea>
     </div>
