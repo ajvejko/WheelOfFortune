@@ -17,9 +17,9 @@ const closeModal = (): void => {
 onClickOutside(customizationWindow, closeModal);
 </script>
 <template>
-  <nav class="fixed right-0 top-0 left-0 z-10 px-8">
+  <nav class="fixed right-0 top-0 left-0 z-10">
     <div
-      class="flex items-center justify-between bg-bgCustom py-3 shadow-xl shadow-bgCustom"
+      class="flex items-center justify-between bg-bgCustom py-3 shadow-xl px-8 shadow-bgCustom"
     >
       <a
         id="#home"
